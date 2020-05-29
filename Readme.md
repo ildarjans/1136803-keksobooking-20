@@ -1,7 +1,7 @@
-# Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
+﻿# Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ильдар Шаймарданов](https://up.htmlacademy.ru/javascript/20/user/1136803).
-* Наставник: `Неизвестно`.
+* Наставник: `Раиль Сахавиев`.
 
 ---
 
