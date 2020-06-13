@@ -25,7 +25,7 @@ var pinRenderProperties = {
   OFFSETY: -70
 };
 
-var hotelTitles = ['Hotel Yamanote Otsuka Eki Tower',
+var hotelNames = ['Hotel Yamanote Otsuka Eki Tower',
   'HOTEL FELICE Akasaka by RELIEF',
   'GrandPalace Allamanda Aoyama',
   'Rixos Premium Kazan JBR',
@@ -52,7 +52,7 @@ renderHotels(cardTemplateContent, pinTemplateContent);
 
 function renderHotels(card, pin) {
   var mapPins = mapSection.querySelector('.map__pins');
-  var hotels = generateHotelsArray(8, hotelTitles);
+  var hotels = generateHotelsArray(8, hotelNames);
   var documentFragment = document.createDocumentFragment();
   for (var i = 0; i < hotels.length; i++) {
     renderCardTemplate(documentFragment, card, hotels[i]);
@@ -78,8 +78,8 @@ function generateHotelsArray(quantity, titles) {
       type: getRandomHotelType(),
       rooms: getRandomInteger(hotelDefaultProperties.rooms.MIN, hotelDefaultProperties.rooms.MAX),
       guests: getRandomInteger(hotelDefaultProperties.guests.MIN, hotelDefaultProperties.guests.MAX),
-      checkin: getRandomCheckInTime(),
-      checkout: getRandomCheckOutTime(),
+      checkin: getRandomTime(checkInOptions),
+      checkout: getRandomTime(checkOutOptions),
       features: getRandomFeatures(),
       description: 'Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.',
       photos: getRandomPhotos()
@@ -98,7 +98,7 @@ function renderCardTemplate(parent, cardTemplate, hotel) {
   card.querySelector('.popup__text--price').innerHTML = hotel.offer.price + '&#x20bd;<span>/ночь</span>';
   card.querySelector('.popup__type').textContent = hotel.offer.type;
   card.querySelector('.popup__text--capacity').textContent = hotel.offer.rooms + ' комнаты для ' + hotel.offer.guests + ' гостей';
-  card.querySelector('.popup__text--time').textContent = 'Заезд после' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
+  card.querySelector('.popup__text--time').textContent = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
   card.querySelector('.popup__description').textContent = hotel.offer.description;
 
   renderCardFeatures(card, hotel.offer.features);
@@ -146,12 +146,8 @@ function getRandomHotelType() {
   return hotelTypes[getRandomInteger(0, hotelTypes.length - 1)];
 }
 
-function getRandomCheckInTime() {
-  return checkInOptions[getRandomInteger(0, checkInOptions.length - 1)];
-}
-
-function getRandomCheckOutTime() {
-  return checkOutOptions[getRandomInteger(0, checkOutOptions.length - 1)];
+function getRandomTime(timesArray) {
+  return timesArray[getRandomInteger(0, timesArray.length - 1)];
 }
 
 function getRandomInteger(min, max) {
