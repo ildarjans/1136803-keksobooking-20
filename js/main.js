@@ -1,6 +1,6 @@
 'use strict';
 
-var hotelProperties = {
+var hotelDefaultProperties = {
   location: {
     X_MIN: 330,
     X_MAX: 830,
@@ -20,7 +20,7 @@ var hotelProperties = {
     MAX: 10
   }
 };
-var pinProperties = {
+var pinRenderProperties = {
   OFFSETX: -25,
   OFFSETY: -70
 };
@@ -37,9 +37,10 @@ var hotelPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
-var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var featuresOptions = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var hotelTypes = ['palace', 'flat', 'house', 'bungalo'];
-var timeOptions = ['12:00', '13:00', '14:00'];
+var checkInOptions = ['12:00', '13:00', '14:00'];
+var checkOutOptions = ['12:00', '13:00', '14:00'];
 
 var mapSection = document.querySelector('section.map');
 mapSection.classList.remove('map--faded');
@@ -52,12 +53,12 @@ renderHotels(cardTemplateContent, pinTemplateContent);
 function renderHotels(card, pin) {
   var mapPins = mapSection.querySelector('.map__pins');
   var hotels = generateHotelsArray(8, hotelNames);
-  var fragment = document.createDocumentFragment();
+  var documentFragment = document.createDocumentFragment();
   for (var i = 0; i < hotels.length; i++) {
-    renderCardTemplate(fragment, card, hotels[i]);
-    renderPinTemplate(fragment, pin, hotels[i]);
+    renderCardTemplate(documentFragment, card, hotels[i]);
+    renderPinTemplate(documentFragment, pin, hotels[i]);
   }
-  mapPins.append(fragment);
+  mapPins.append(documentFragment);
 }
 
 function generateHotelsArray(quantity, titles) {
@@ -67,21 +68,21 @@ function generateHotelsArray(quantity, titles) {
     var obj = {};
     obj.author = {avatar: 'img/avatars/user0' + i + '.png'};
     obj.location = {
-      x: getRandomInteger(hotelProperties.location.X_MIN, hotelProperties.location.X_MAX),
-      y: getRandomInteger(hotelProperties.location.Y_MIN, hotelProperties.location.Y_MAX)
+      x: getRandomInteger(hotelDefaultProperties.location.X_MIN, hotelDefaultProperties.location.X_MAX),
+      y: getRandomInteger(hotelDefaultProperties.location.Y_MIN, hotelDefaultProperties.location.Y_MAX)
     };
     obj.offer = {
       title: titles[i - 1],
       address: obj.location.x + ', ' + obj.location.y,
-      price: getRandomInteger(hotelProperties.price.MIN, hotelProperties.price.MAX),
+      price: getRandomInteger(hotelDefaultProperties.price.MIN, hotelDefaultProperties.price.MAX),
       type: getRandomHotelType(),
-      rooms: getRandomInteger(hotelProperties.rooms.MIN, hotelProperties.rooms.MAX),
-      guests: getRandomInteger(hotelProperties.guests.MIN, hotelProperties.guests.MAX),
-      checkin: getRandomTime(timeOptions),
-      checkout: getRandomTime(timeOptions),
-      features: getShuffledArray(features),
+      rooms: getRandomInteger(hotelDefaultProperties.rooms.MIN, hotelDefaultProperties.rooms.MAX),
+      guests: getRandomInteger(hotelDefaultProperties.guests.MIN, hotelDefaultProperties.guests.MAX),
+      checkin: getRandomTime(checkInOptions),
+      checkout: getRandomTime(checkOutOptions),
+      features: getRandomFeatures(),
       description: 'Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.',
-      photos: getShuffledArray(hotelPhotos)
+      photos: getRandomPhotos()
     };
     data.push(obj);
   }
@@ -110,14 +111,14 @@ function renderPinTemplate(parent, pinTemplate, hotel) {
   var pin = pinTemplate.cloneNode(true);
   pin.children[0].src = hotel.author.avatar;
   pin.children[0].alt = hotel.offer.title;
-  pin.style = 'left:' + (hotel.location.x + pinProperties.OFFSETX) + 'px; top: ' + (hotel.location.y + pinProperties.OFFSETY) + 'px;';
+  pin.style = 'left:' + (hotel.location.x + pinRenderProperties.OFFSETX) + 'px; top: ' + (hotel.location.y + pinRenderProperties.OFFSETY) + 'px;';
   parent.append(pin);
 }
 
 function renderCardFeatures(cardTemplate, offerFeatures) {
-  var templateElement = cardTemplate.querySelectorAll('.popup__feature');
+  var features = cardTemplate.querySelectorAll('.popup__feature');
   var regex = new RegExp(offerFeatures.join('|'), 'gi');
-  templateElement.forEach(function (feature) {
+  features.forEach(function (feature) {
     return !feature.classList.value.match(regex) ? feature.remove() : '';
   });
 }
@@ -133,6 +134,14 @@ function renderCardPhotos(cardTemplate, offerPhotos) {
   }
 }
 
+function getRandomPhotos() {
+  return hotelPhotos.slice(0, getRandomInteger(1, hotelPhotos.length - 1));
+}
+
+function getRandomFeatures() {
+  return featuresOptions.slice(0, getRandomInteger(1, featuresOptions.length - 1));
+}
+
 function getRandomHotelType() {
   return hotelTypes[getRandomInteger(0, hotelTypes.length - 1)];
 }
@@ -143,19 +152,4 @@ function getRandomTime(timesArray) {
 
 function getRandomInteger(min, max) {
   return min + Math.floor(Math.random() * (max + 1 - min));
-}
-
-function getShuffledArray(arr) {
-  if (arr.length < 1) {
-    return arr;
-  }
-  var quantity = getRandomInteger(1, arr.length - 1);
-  var randomNames = [];
-  while (randomNames.length < quantity) {
-    var guess = arr[getRandomInteger(0, arr.length - 1)];
-    if (randomNames.indexOf(guess) < 0) {
-      randomNames.push(guess);
-    }
-  }
-  return randomNames;
 }
