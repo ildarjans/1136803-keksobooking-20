@@ -1,6 +1,6 @@
 'use strict';
 
-var hotelDefaultProperties = {
+var hotelProperties = {
   location: {
     X_MIN: 330,
     X_MAX: 830,
@@ -20,7 +20,7 @@ var hotelDefaultProperties = {
     MAX: 10
   }
 };
-var pinRenderProperties = {
+var pinProperties = {
   OFFSETX: -25,
   OFFSETY: -70
 };
@@ -37,13 +37,12 @@ var hotelPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
-var featuresOptions = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var hotelTypes = ['palace', 'flat', 'house', 'bungalo'];
-var checkInOptions = ['12:00', '13:00', '14:00'];
-var checkOutOptions = ['12:00', '13:00', '14:00'];
+var timeOptions = ['12:00', '13:00', '14:00'];
 
 var mapSection = document.querySelector('section.map');
-mapSection.classList.remove('map--faded');
+// mapSection.classList.remove('map--faded');
 
 var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
 var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
@@ -53,12 +52,12 @@ renderHotels(cardTemplateContent, pinTemplateContent);
 function renderHotels(card, pin) {
   var mapPins = mapSection.querySelector('.map__pins');
   var hotels = generateHotelsArray(8, hotelNames);
-  var documentFragment = document.createDocumentFragment();
+  var fragment = document.createDocumentFragment();
   for (var i = 0; i < hotels.length; i++) {
-    renderCardTemplate(documentFragment, card, hotels[i]);
-    renderPinTemplate(documentFragment, pin, hotels[i]);
+    renderCardTemplate(fragment, card, hotels[i]);
+    renderPinTemplate(fragment, pin, hotels[i]);
   }
-  mapPins.append(documentFragment);
+  mapPins.append(fragment);
 }
 
 function generateHotelsArray(quantity, titles) {
@@ -68,21 +67,21 @@ function generateHotelsArray(quantity, titles) {
     var obj = {};
     obj.author = {avatar: 'img/avatars/user0' + i + '.png'};
     obj.location = {
-      x: getRandomInteger(hotelDefaultProperties.location.X_MIN, hotelDefaultProperties.location.X_MAX),
-      y: getRandomInteger(hotelDefaultProperties.location.Y_MIN, hotelDefaultProperties.location.Y_MAX)
+      x: getRandomInteger(hotelProperties.location.X_MIN, hotelProperties.location.X_MAX),
+      y: getRandomInteger(hotelProperties.location.Y_MIN, hotelProperties.location.Y_MAX)
     };
     obj.offer = {
       title: titles[i - 1],
       address: obj.location.x + ', ' + obj.location.y,
-      price: getRandomInteger(hotelDefaultProperties.price.MIN, hotelDefaultProperties.price.MAX),
+      price: getRandomInteger(hotelProperties.price.MIN, hotelProperties.price.MAX),
       type: getRandomHotelType(),
-      rooms: getRandomInteger(hotelDefaultProperties.rooms.MIN, hotelDefaultProperties.rooms.MAX),
-      guests: getRandomInteger(hotelDefaultProperties.guests.MIN, hotelDefaultProperties.guests.MAX),
-      checkin: getRandomTime(checkInOptions),
-      checkout: getRandomTime(checkOutOptions),
-      features: getRandomFeatures(),
+      rooms: getRandomInteger(hotelProperties.rooms.MIN, hotelProperties.rooms.MAX),
+      guests: getRandomInteger(hotelProperties.guests.MIN, hotelProperties.guests.MAX),
+      checkin: getRandomTime(timeOptions),
+      checkout: getRandomTime(timeOptions),
+      features: getRandomArray(features),
       description: 'Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.',
-      photos: getRandomPhotos()
+      photos: getRandomArray(hotelPhotos)
     };
     data.push(obj);
   }
@@ -111,14 +110,14 @@ function renderPinTemplate(parent, pinTemplate, hotel) {
   var pin = pinTemplate.cloneNode(true);
   pin.children[0].src = hotel.author.avatar;
   pin.children[0].alt = hotel.offer.title;
-  pin.style = 'left:' + (hotel.location.x + pinRenderProperties.OFFSETX) + 'px; top: ' + (hotel.location.y + pinRenderProperties.OFFSETY) + 'px;';
+  pin.style = 'left:' + (hotel.location.x + pinProperties.OFFSETX) + 'px; top: ' + (hotel.location.y + pinProperties.OFFSETY) + 'px;';
   parent.append(pin);
 }
 
 function renderCardFeatures(cardTemplate, offerFeatures) {
-  var features = cardTemplate.querySelectorAll('.popup__feature');
+  var templateFeatures = cardTemplate.querySelectorAll('.popup__feature');
   var regex = new RegExp(offerFeatures.join('|'), 'gi');
-  features.forEach(function (feature) {
+  templateFeatures.forEach(function (feature) {
     return !feature.classList.value.match(regex) ? feature.remove() : '';
   });
 }
@@ -134,14 +133,6 @@ function renderCardPhotos(cardTemplate, offerPhotos) {
   }
 }
 
-function getRandomPhotos() {
-  return hotelPhotos.slice(0, getRandomInteger(1, hotelPhotos.length - 1));
-}
-
-function getRandomFeatures() {
-  return featuresOptions.slice(0, getRandomInteger(1, featuresOptions.length - 1));
-}
-
 function getRandomHotelType() {
   return hotelTypes[getRandomInteger(0, hotelTypes.length - 1)];
 }
@@ -153,3 +144,118 @@ function getRandomTime(timesArray) {
 function getRandomInteger(min, max) {
   return min + Math.floor(Math.random() * (max + 1 - min));
 }
+
+function getRandomArray(arr) {
+  if (arr.length < 1) {
+    return arr;
+  }
+  var quantity = getRandomInteger(1, arr.length - 1);
+  var randomNames = [];
+  while (randomNames.length < quantity) {
+    var guess = arr[getRandomInteger(0, arr.length - 1)];
+    if (randomNames.indexOf(guess) < 0) {
+      randomNames.push(guess);
+    }
+  }
+  return randomNames;
+}
+
+// =============================================================
+// =============================================================
+// MODULE4-TASK2
+// 1) Switch off all fieldset (or their inputs / select) to disable
+// 2) Add listener mousedown event to .map__pin--main.
+// # all about unactive state https://up.htmlacademy.ru/javascript/20/project/keksobooking#keksobooking-1-1
+
+var mainPinProperties = {
+  OFFSETX: -32.5,
+  OFFSETY: -84
+};
+
+var guestNoticeForm = document.querySelector('.notice form.ad-form');
+var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
+var filtersForm = mapSection.querySelector('.map__filters');
+var mainPin = mapSection.querySelector('.map__pin--main');
+var roomsQuantity = guestNoticeForm.querySelector('#room_number');
+var roomsCapacity = guestNoticeForm.querySelector('#capacity');
+
+
+switchPageUnactiveState();
+roomsQuantityValidationHandler();
+mainPin.addEventListener('mousedown', mainPinMousedownHandler);
+mainPin.addEventListener('keydown', mainPinMousedownHandler);
+roomsQuantity.addEventListener('change', roomsQuantityValidationHandler);
+roomsCapacity.addEventListener('change', roomsQuantityValidationHandler);
+
+function switchPageUnactiveState() {
+  mapSection.classList.add('map--faded');
+  guestNoticeForm.classList.add('ad-form--disabled');
+  filtersForm.classList.add('ad-form--disabled');
+  toggleActiveFormFields();
+}
+function switchPageActiveState() {
+  mapSection.classList.remove('map--faded');
+  guestNoticeForm.classList.remove('ad-form--disabled');
+  filtersForm.classList.remove('ad-form--disabled');
+  toggleActiveFormFields();
+  fillFormAddressInput();
+}
+
+function mainPinMousedownHandler(evt) {
+  if (evt.button === 0 || evt.key === 'Enter') {
+    switchPageActiveState();
+    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
+    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
+  }
+}
+
+function fillFormAddressInput() {
+  var mainPinCoordinates = calcMainPinCoordinates();
+  guestNoticeForm.querySelector('#address').value =
+    'x: ' + mainPinCoordinates.x + ', y: ' + mainPinCoordinates.y;
+}
+
+function calcMainPinCoordinates() {
+  return {
+    x: +mainPin.style.left.replace('px', '') + mainPinProperties.OFFSETX,
+    y: +mainPin.style.top.replace('px', '') + mainPinProperties.OFFSETY
+  };
+}
+
+function toggleActiveFormFields() {
+  formFields.forEach(function (field) {
+    field.disabled = field.disabled ? false : true;
+  });
+}
+
+function roomsQuantityValidationHandler() {
+  var selectedValue = roomsQuantity.selectedOptions[0].value;
+  var roomsCapacityOptions = Array.from(roomsCapacity.options);
+  var selectedDisabled = false;
+
+  if (selectedValue > 3) {
+    roomsCapacityOptions.forEach(function (option) {
+      option.disabled = option.value < 1 ? false : true;
+      if (option.selected && option.disabled) {
+        selectedDisabled = true;
+      }
+    });
+  } else {
+    roomsCapacityOptions.forEach(function (option) {
+      option.disabled = option.value > 0 && option.value <= selectedValue ? false : true;
+      if (option.selected && option.disabled) {
+        selectedDisabled = true;
+      }
+    });
+  }
+
+  if (selectedDisabled) {
+    roomsCapacity.setCustomValidity('Выбрана не допустимая опция');
+    roomsCapacity.style.color = '#a82929';
+  } else {
+    roomsCapacity.setCustomValidity('');
+    roomsCapacity.style.color = 'unset';
+  }
+}
+
+
