@@ -42,12 +42,12 @@ var hotelTypes = ['palace', 'flat', 'house', 'bungalo'];
 var timeOptions = ['12:00', '13:00', '14:00'];
 
 var mapSection = document.querySelector('section.map');
-mapSection.classList.remove('map--faded');
+// mapSection.classList.remove('map--faded');
 
 var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
 var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
 
-renderHotels(cardTemplateContent, pinTemplateContent);
+// renderHotels(cardTemplateContent, pinTemplateContent);
 
 function renderHotels(card, pin) {
   var mapPins = mapSection.querySelector('.map__pins');
@@ -158,4 +158,125 @@ function getShuffledArray(arr) {
     }
   }
   return randomNames;
+}
+
+// ############################################################
+// ######               MODULE4-TASK2                    ######
+// ############################################################
+
+var mainPinProperties = {
+  OFFSETX: -32.5,
+  OFFSETY: -84
+};
+var validationProperties = {
+  MESSAGE_ROOMS: 'Для заданного количества комнат выбранно не допустимое количество гостей',
+  COLOR_INVALID: '#a82929'
+};
+
+var guestNoticeForm = document.querySelector('.notice form.ad-form');
+var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
+var filtersForm = mapSection.querySelector('.map__filters');
+var mainPin = mapSection.querySelector('.map__pin--main');
+var roomsQuantity = guestNoticeForm.querySelector('#room_number');
+var roomsCapacity = guestNoticeForm.querySelector('#capacity');
+
+
+mainPin.addEventListener('mousedown', mainPinMousedownHandler);
+mainPin.addEventListener('keydown', mainPinKeydownHandler);
+
+
+pageInactiveState();
+
+function pageInactiveState() {
+  mapSection.classList.add('map--faded');
+  guestNoticeForm.classList.add('ad-form--disabled');
+  filtersForm.classList.add('ad-form--disabled');
+  var mainPinCoordinates = calcMainPinCenterCoordinates();
+  fillFormAddressInput(mainPinCoordinates);
+  setFormFieldsDisabledState(true);
+  roomsQuantity.removeEventListener('change', roomsValidationHandler);
+  roomsCapacity.removeEventListener('change', roomsValidationHandler);
+}
+
+function pageActiveState() {
+  mapSection.classList.remove('map--faded');
+  guestNoticeForm.classList.remove('ad-form--disabled');
+  filtersForm.classList.remove('ad-form--disabled');
+  var mainPinCoordinates = calcMainPinEdgeCoordinates();
+  fillFormAddressInput(mainPinCoordinates);
+  setFormFieldsDisabledState(false);
+  roomsValidationHandler();
+  renderHotels(cardTemplateContent, pinTemplateContent);
+  roomsQuantity.addEventListener('change', roomsValidationHandler);
+  roomsCapacity.addEventListener('change', roomsValidationHandler);
+}
+
+function mainPinKeydownHandler(event) {
+  if (event.key === 'Enter') {
+    pageActiveState();
+    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
+    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
+  }
+}
+
+function mainPinMousedownHandler(event) {
+  if (event.button === 0) {
+    pageActiveState();
+    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
+    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
+  }
+}
+
+function fillFormAddressInput(pinCoordinates) {
+  guestNoticeForm.querySelector('#address').value =
+    'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
+}
+
+function calcMainPinEdgeCoordinates() {
+  return {
+    x: mainPin.offsetLeft + mainPinProperties.OFFSETX,
+    y: mainPin.offsetTop + mainPinProperties.OFFSETY
+  };
+}
+
+function calcMainPinCenterCoordinates() {
+  return {
+    x: mainPin.offsetLeft + (mainPin.offsetWidth / 2),
+    y: mainPin.offsetTop + (mainPin.offsetHeight / 2)
+  };
+}
+
+function setFormFieldsDisabledState(isDisabled) {
+  isDisabled = isDisabled === undefined ? true : isDisabled;
+  formFields.forEach(function (field) {
+    field.disabled = isDisabled;
+  });
+}
+
+function roomsValidationHandler() {
+  var selectedRoom = roomsQuantity.selectedOptions[0].value;
+  var roomsCapacityOptions = Array.from(roomsCapacity.options);
+  var selectedAndDisabled = false;
+
+  roomsCapacityOptions.forEach(function (option) {
+    if (selectedRoom > 3) {
+      option.disabled = option.value > 0 ? true : false;
+    } else {
+      option.disabled = option.value <= selectedRoom && option.value > 0 ? false : true;
+    }
+    if (option.selected && option.disabled) {
+      selectedAndDisabled = true;
+    }
+  });
+  roomsCustomValidity(selectedAndDisabled);
+}
+
+function roomsCustomValidity(valid) {
+  if (valid) {
+    roomsCapacity.setCustomValidity(validationProperties.MESSAGE_ROOMS);
+    roomsCapacity.style.color = validationProperties.COLOR_INVALID;
+  } else {
+    roomsCapacity.setCustomValidity('');
+    roomsCapacity.style.color = 'unset';
+  }
 }
