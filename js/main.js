@@ -47,15 +47,14 @@ var mapSection = document.querySelector('section.map');
 var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
 var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
 
-// renderHotels(cardTemplateContent, pinTemplateContent);
+var hotels = generateHotelsArray(8, hotelNames);
+// renderHotelsPins(pinTemplateContent, hotels);
 
-function renderHotels(card, pin) {
+function renderHotelsPins(pin, hotelsArray) {
   var mapPins = mapSection.querySelector('.map__pins');
-  var hotels = generateHotelsArray(8, hotelNames);
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < hotels.length; i++) {
-    renderCardTemplate(fragment, card, hotels[i]);
-    renderPinTemplate(fragment, pin, hotels[i]);
+  for (var i = 0; i < hotelsArray.length; i++) {
+    renderPinTemplate(fragment, pin, hotelsArray[i]);
   }
   mapPins.append(fragment);
 }
@@ -95,7 +94,7 @@ function renderCardTemplate(parent, cardTemplate, hotel) {
   card.querySelector('.popup__title').textContent = hotel.offer.title;
   card.querySelector('.popup__text--address').textContent = hotel.offer.address;
   card.querySelector('.popup__text--price').innerHTML = hotel.offer.price + '&#x20bd;<span>/ночь</span>';
-  card.querySelector('.popup__type').textContent = hotel.offer.type;
+  card.querySelector('.popup__type').textContent = translateHotelType(hotel.offer.type);
   card.querySelector('.popup__text--capacity').textContent = hotel.offer.rooms + ' комнаты для ' + hotel.offer.guests + ' гостей';
   card.querySelector('.popup__text--time').textContent = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
   card.querySelector('.popup__description').textContent = hotel.offer.description;
@@ -161,6 +160,35 @@ function getShuffledArray(arr) {
 }
 
 // ############################################################
+// #######                MODULE3-TASK3                 #######
+// ############################################################
+
+renderHotelsCards(cardTemplateContent, hotels.slice(0, 1));
+
+function renderHotelsCards(cardTemplate, hotelsArr) {
+  var mapFiltersContainer = document.querySelector('.map__filters-container');
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < hotelsArr.length; i++) {
+    renderCardTemplate(fragment, cardTemplate, hotelsArr[i]);
+  }
+  mapSection.insertBefore(fragment, mapFiltersContainer);
+}
+
+function translateHotelType(type) {
+  switch (type) {
+    case 'palace':
+      return 'Дворец';
+    case 'flat':
+      return 'Квартира';
+    case 'house':
+      return 'Дом';
+    case 'bungalo':
+      return 'Бунгало';
+  }
+  return type;
+}
+
+// ############################################################
 // ######               MODULE4-TASK2                    ######
 // ############################################################
 
@@ -170,7 +198,8 @@ var mainPinProperties = {
 };
 var validationProperties = {
   MESSAGE_ROOMS: 'Для заданного количества комнат выбранно не допустимое количество гостей',
-  COLOR_INVALID: '#a82929'
+  COLOR_INVALID: '#a82929',
+  COLOR_VALID: '#000000'
 };
 
 var guestNoticeForm = document.querySelector('.notice form.ad-form');
@@ -206,7 +235,8 @@ function pageActiveState() {
   fillFormAddressInput(mainPinCoordinates);
   setFormFieldsDisabledState(false);
   roomsValidationHandler();
-  renderHotels(cardTemplateContent, pinTemplateContent);
+  renderHotelsPins(pinTemplateContent, hotels);
+  // renderHotelsCards(cardTemplateContent, hotels.slice(0, 1));
   roomsQuantity.addEventListener('change', roomsValidationHandler);
   roomsCapacity.addEventListener('change', roomsValidationHandler);
 }
@@ -264,10 +294,18 @@ function roomsValidationHandler() {
     } else {
       option.disabled = option.value <= selectedRoom && option.value > 0 ? false : true;
     }
+
+    if (!option.disabled) {
+      option.style.color = validationProperties.COLOR_VALID;
+    } else {
+      option.style.color = 'unset';
+    }
+
     if (option.selected && option.disabled) {
       selectedAndDisabled = true;
     }
   });
+
   roomsCustomValidity(selectedAndDisabled);
 }
 
