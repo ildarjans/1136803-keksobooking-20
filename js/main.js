@@ -20,9 +20,9 @@ var hotelProperties = {
     MAX: 10
   }
 };
-var pinProperties = {
-  OFFSETX: -25,
-  OFFSETY: -70
+var pinOffset = {
+  x: -25,
+  y: -70
 };
 
 var hotelNames = ['Hotel Yamanote Otsuka Eki Tower',
@@ -109,7 +109,7 @@ function renderPinTemplate(parent, pinTemplate, hotel) {
   var pin = pinTemplate.cloneNode(true);
   pin.children[0].src = hotel.author.avatar;
   pin.children[0].alt = hotel.offer.title;
-  pin.style = 'left:' + (hotel.location.x + pinProperties.OFFSETX) + 'px; top: ' + (hotel.location.y + pinProperties.OFFSETY) + 'px;';
+  pin.style = 'left:' + (hotel.location.x + pinOffset.x) + 'px; top: ' + (hotel.location.y + pinOffset.y) + 'px;';
   parent.append(pin);
 }
 
@@ -192,15 +192,14 @@ function translateHotelType(type) {
 // ######               MODULE4-TASK2                    ######
 // ############################################################
 
-var mainPinProperties = {
-  OFFSETX: -32.5,
-  OFFSETY: -84
+var mainPinOffset = {
+  x: -32.5,
+  y: -84
 };
-var validationProperties = {
-  MESSAGE_ROOMS: 'Для заданного количества комнат выбранно не допустимое количество гостей',
-  COLOR_INVALID: '#a82929',
-  COLOR_VALID: '#000000'
-};
+
+var ROOMS_MESSAGE = 'Для заданного количества комнат выбранно не допустимое количество гостей';
+var INVALID_COLOR = '#a82929';
+var VALID_COLOR = '#000000';
 
 var guestNoticeForm = document.querySelector('.notice form.ad-form');
 var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
@@ -209,112 +208,101 @@ var mainPin = mapSection.querySelector('.map__pin--main');
 var roomsQuantity = guestNoticeForm.querySelector('#room_number');
 var roomsCapacity = guestNoticeForm.querySelector('#capacity');
 
-
-mainPin.addEventListener('mousedown', mainPinMousedownHandler);
-mainPin.addEventListener('keydown', mainPinKeydownHandler);
-
-
-pageInactiveState();
-
-function pageInactiveState() {
+function disableKeksobooking() {
   mapSection.classList.add('map--faded');
   guestNoticeForm.classList.add('ad-form--disabled');
   filtersForm.classList.add('ad-form--disabled');
-  var mainPinCoordinates = calcMainPinCenterCoordinates();
-  fillFormAddressInput(mainPinCoordinates);
-  setFormFieldsDisabledState(true);
-  roomsQuantity.removeEventListener('change', roomsValidationHandler);
-  roomsCapacity.removeEventListener('change', roomsValidationHandler);
+  var pinCoordinates = getMainPinCenterCoordinates();
+  setAddressInputValue('x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y);
+  disableFormFields();
+  roomsQuantity.removeEventListener('change', validateRooms);
+  roomsCapacity.removeEventListener('change', validateRooms);
+  mainPin.addEventListener('mousedown', mainPinMousedownHandler);
+  mainPin.addEventListener('keydown', mainPinKeydownHandler);
 }
 
-function pageActiveState() {
+function enableKeksobooking() {
   mapSection.classList.remove('map--faded');
   guestNoticeForm.classList.remove('ad-form--disabled');
   filtersForm.classList.remove('ad-form--disabled');
-  var mainPinCoordinates = calcMainPinEdgeCoordinates();
-  fillFormAddressInput(mainPinCoordinates);
-  setFormFieldsDisabledState(false);
-  roomsValidationHandler();
+  var pinCoordinates = getMainPinArrowCoordinates();
+  setAddressInputValue('x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y);
+  enableFormFields();
+  validateRooms();
   renderHotelsPins(pinTemplateContent, hotels);
   // renderHotelsCards(cardTemplateContent, hotels.slice(0, 1));
-  roomsQuantity.addEventListener('change', roomsValidationHandler);
-  roomsCapacity.addEventListener('change', roomsValidationHandler);
+  roomsQuantity.addEventListener('change', validateRooms);
+  roomsCapacity.addEventListener('change', validateRooms);
+  mainPin.removeEventListener('keydown', mainPinMousedownHandler);
+  mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
 }
 
 function mainPinKeydownHandler(event) {
   if (event.key === 'Enter') {
-    pageActiveState();
-    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
-    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
+    enableKeksobooking();
   }
 }
 
 function mainPinMousedownHandler(event) {
   if (event.button === 0) {
-    pageActiveState();
-    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
-    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
+    enableKeksobooking();
   }
 }
 
-function fillFormAddressInput(pinCoordinates) {
-  guestNoticeForm.querySelector('#address').value =
-    'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
+function setAddressInputValue(address) {
+  guestNoticeForm.querySelector('#address').value = address;
 }
 
-function calcMainPinEdgeCoordinates() {
+function getMainPinArrowCoordinates() {
   return {
-    x: mainPin.offsetLeft + mainPinProperties.OFFSETX,
-    y: mainPin.offsetTop + mainPinProperties.OFFSETY
+    x: mainPin.offsetLeft + mainPinOffset.x,
+    y: mainPin.offsetTop + mainPinOffset.y
   };
 }
 
-function calcMainPinCenterCoordinates() {
+function getMainPinCenterCoordinates() {
   return {
     x: mainPin.offsetLeft + (mainPin.offsetWidth / 2),
     y: mainPin.offsetTop + (mainPin.offsetHeight / 2)
   };
 }
 
-function setFormFieldsDisabledState(isDisabled) {
-  isDisabled = isDisabled === undefined ? true : isDisabled;
+function disableFormFields() {
   formFields.forEach(function (field) {
-    field.disabled = isDisabled;
+    field.disabled = true;
   });
 }
 
-function roomsValidationHandler() {
+function enableFormFields() {
+  formFields.forEach(function (field) {
+    field.disabled = false;
+  });
+}
+
+function validateRooms() {
   var selectedRoom = roomsQuantity.selectedOptions[0].value;
   var roomsCapacityOptions = Array.from(roomsCapacity.options);
   var selectedAndDisabled = false;
 
   roomsCapacityOptions.forEach(function (option) {
-    if (selectedRoom > 3) {
-      option.disabled = option.value > 0 ? true : false;
+    if (selectedRoom === '100') {
+      option.disabled = option.value !== '0';
     } else {
-      option.disabled = option.value <= selectedRoom && option.value > 0 ? false : true;
+      option.disabled = !(option.value <= selectedRoom && option.value !== '0');
     }
 
-    if (!option.disabled) {
-      option.style.color = validationProperties.COLOR_VALID;
-    } else {
-      option.style.color = 'unset';
-    }
+    option.style.color = option.disabled ? 'unset' : VALID_COLOR;
+    selectedAndDisabled = option.selected && option.disabled || selectedAndDisabled;
 
-    if (option.selected && option.disabled) {
-      selectedAndDisabled = true;
-    }
   });
 
-  roomsCustomValidity(selectedAndDisabled);
-}
-
-function roomsCustomValidity(valid) {
-  if (valid) {
-    roomsCapacity.setCustomValidity(validationProperties.MESSAGE_ROOMS);
-    roomsCapacity.style.color = validationProperties.COLOR_INVALID;
+  if (selectedAndDisabled) {
+    roomsCapacity.setCustomValidity(ROOMS_MESSAGE);
+    roomsCapacity.style.color = INVALID_COLOR;
   } else {
     roomsCapacity.setCustomValidity('');
     roomsCapacity.style.color = 'unset';
   }
 }
+
+disableKeksobooking();
