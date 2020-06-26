@@ -1,308 +1,43 @@
 'use strict';
 
-var hotelProperties = {
-  location: {
-    X_MIN: 330,
-    X_MAX: 830,
-    Y_MIN: 130,
-    Y_MAX: 630
-  },
-  price: {
-    MIN: 100,
-    MAX: 800
-  },
-  rooms: {
-    MIN: 1,
-    MAX: 10
-  },
-  guests: {
-    MIN: 1,
-    MAX: 10
+(function () {
+  var mapSection = window.keksobookingMap.getMapSection();
+  var mainPin = window.keksobookingMap.getMainPin();
+
+  var activateForm = window.guestNoticeForm.activateForm;
+  var deactivateForm = window.guestNoticeForm.deactivateForm;
+  var renderHotelsPins = window.hotelsPins.renderPins;
+  var renderHotelsCards = window.hotelsCards.renderCards;
+  var hotels = window.hotelsGenerator.generateHotelsArray();
+
+  function disableKeksobooking() {
+    mapSection.classList.add('map--faded');
+    mainPin.addEventListener('mousedown', mainPinMousedownHandler);
+    mainPin.addEventListener('keydown', mainPinKeydownHandler);
+    deactivateForm();
   }
-};
-var pinOffset = {
-  x: -25,
-  y: -70
-};
 
-var hotelNames = ['Hotel Yamanote Otsuka Eki Tower',
-  'HOTEL FELICE Akasaka by RELIEF',
-  'GrandPalace Allamanda Aoyama',
-  'Rixos Premium Kazan JBR',
-  'Shah Palace yamne uren',
-  'Brandisimo Millennium Super Flat',
-  'Jumeirah Al Naseem',
-  'Mövenpick Jumeirah Lakes'];
-var hotelPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-
-var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var hotelTypes = ['palace', 'flat', 'house', 'bungalo'];
-var timeOptions = ['12:00', '13:00', '14:00'];
-
-var mapSection = document.querySelector('section.map');
-// mapSection.classList.remove('map--faded');
-
-var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
-var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
-
-var hotels = generateHotelsArray(8, hotelNames);
-// renderHotelsPins(pinTemplateContent, hotels);
-
-function renderHotelsPins(pin, hotelsArray) {
-  var mapPins = mapSection.querySelector('.map__pins');
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < hotelsArray.length; i++) {
-    renderPinTemplate(fragment, pin, hotelsArray[i]);
+  function enableKeksobooking() {
+    mapSection.classList.remove('map--faded');
+    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
+    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
+    activateForm();
+    renderHotelsPins(hotels);
+    renderHotelsCards(hotels);
   }
-  mapPins.append(fragment);
-}
 
-function generateHotelsArray(quantity, titles) {
-  var data = [];
-
-  for (var i = 1; i <= quantity; i++) {
-    var obj = {};
-    obj.author = {avatar: 'img/avatars/user0' + i + '.png'};
-    obj.location = {
-      x: getRandomInteger(hotelProperties.location.X_MIN, hotelProperties.location.X_MAX),
-      y: getRandomInteger(hotelProperties.location.Y_MIN, hotelProperties.location.Y_MAX)
-    };
-    obj.offer = {
-      title: titles[i - 1],
-      address: obj.location.x + ', ' + obj.location.y,
-      price: getRandomInteger(hotelProperties.price.MIN, hotelProperties.price.MAX),
-      type: getRandomHotelType(),
-      rooms: getRandomInteger(hotelProperties.rooms.MIN, hotelProperties.rooms.MAX),
-      guests: getRandomInteger(hotelProperties.guests.MIN, hotelProperties.guests.MAX),
-      checkin: getRandomTime(timeOptions),
-      checkout: getRandomTime(timeOptions),
-      features: getShuffledArray(features),
-      description: 'Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.',
-      photos: getShuffledArray(hotelPhotos)
-    };
-    data.push(obj);
-  }
-  return data;
-}
-
-function renderCardTemplate(parent, cardTemplate, hotel) {
-  var card = cardTemplate.cloneNode(true);
-
-  card.querySelector('.popup__avatar').src = hotel.author.avatar;
-  card.querySelector('.popup__title').textContent = hotel.offer.title;
-  card.querySelector('.popup__text--address').textContent = hotel.offer.address;
-  card.querySelector('.popup__text--price').innerHTML = hotel.offer.price + '&#x20bd;<span>/ночь</span>';
-  card.querySelector('.popup__type').textContent = translateHotelType(hotel.offer.type);
-  card.querySelector('.popup__text--capacity').textContent = hotel.offer.rooms + ' комнаты для ' + hotel.offer.guests + ' гостей';
-  card.querySelector('.popup__text--time').textContent = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
-  card.querySelector('.popup__description').textContent = hotel.offer.description;
-
-  renderCardFeatures(card, hotel.offer.features);
-  renderCardPhotos(card, hotel.offer.photos);
-
-  parent.append(card);
-}
-
-function renderPinTemplate(parent, pinTemplate, hotel) {
-  var pin = pinTemplate.cloneNode(true);
-  pin.children[0].src = hotel.author.avatar;
-  pin.children[0].alt = hotel.offer.title;
-  pin.style = 'left:' + (hotel.location.x + pinOffset.x) + 'px; top: ' + (hotel.location.y + pinOffset.y) + 'px;';
-  parent.append(pin);
-}
-
-function renderCardFeatures(cardTemplate, offerFeatures) {
-  var templateElement = cardTemplate.querySelectorAll('.popup__feature');
-  var regex = new RegExp(offerFeatures.join('|'), 'gi');
-  templateElement.forEach(function (feature) {
-    return !feature.classList.value.match(regex) ? feature.remove() : '';
-  });
-}
-
-function renderCardPhotos(cardTemplate, offerPhotos) {
-  var photosContainer = cardTemplate.querySelector('.popup__photos');
-  var photo = cardTemplate.querySelector('.popup__photo');
-  photo.remove();
-  for (var i = 0; i < offerPhotos.length; i++) {
-    var newPhoto = photo.cloneNode();
-    newPhoto.src = offerPhotos[i];
-    photosContainer.append(newPhoto);
-  }
-}
-
-function getRandomHotelType() {
-  return hotelTypes[getRandomInteger(0, hotelTypes.length - 1)];
-}
-
-function getRandomTime(timesArray) {
-  return timesArray[getRandomInteger(0, timesArray.length - 1)];
-}
-
-function getRandomInteger(min, max) {
-  return min + Math.floor(Math.random() * (max + 1 - min));
-}
-
-function getShuffledArray(arr) {
-  if (arr.length < 1) {
-    return arr;
-  }
-  var quantity = getRandomInteger(1, arr.length - 1);
-  var randomNames = [];
-  while (randomNames.length < quantity) {
-    var guess = arr[getRandomInteger(0, arr.length - 1)];
-    if (randomNames.indexOf(guess) < 0) {
-      randomNames.push(guess);
+  function mainPinKeydownHandler(event) {
+    if (event.key === 'Enter') {
+      enableKeksobooking();
     }
   }
-  return randomNames;
-}
 
-// ############################################################
-// #######                MODULE3-TASK3                 #######
-// ############################################################
-
-renderHotelsCards(cardTemplateContent, hotels.slice(0, 1));
-
-function renderHotelsCards(cardTemplate, hotelsArr) {
-  var mapFiltersContainer = document.querySelector('.map__filters-container');
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < hotelsArr.length; i++) {
-    renderCardTemplate(fragment, cardTemplate, hotelsArr[i]);
-  }
-  mapSection.insertBefore(fragment, mapFiltersContainer);
-}
-
-function translateHotelType(type) {
-  switch (type) {
-    case 'palace':
-      return 'Дворец';
-    case 'flat':
-      return 'Квартира';
-    case 'house':
-      return 'Дом';
-    case 'bungalo':
-      return 'Бунгало';
-  }
-  return type;
-}
-
-// ############################################################
-// ######               MODULE4-TASK2                    ######
-// ############################################################
-
-var mainPinOffset = {
-  x: -32.5,
-  y: -84
-};
-
-var ROOMS_MESSAGE = 'Для заданного количества комнат выбранно не допустимое количество гостей';
-var INVALID_COLOR = '#a82929';
-var VALID_COLOR = '#000000';
-
-var guestNoticeForm = document.querySelector('.notice form.ad-form');
-var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
-var filtersForm = mapSection.querySelector('.map__filters');
-var mainPin = mapSection.querySelector('.map__pin--main');
-var roomsQuantity = guestNoticeForm.querySelector('#room_number');
-var roomsCapacity = guestNoticeForm.querySelector('#capacity');
-
-function disableKeksobooking() {
-  mapSection.classList.add('map--faded');
-  guestNoticeForm.classList.add('ad-form--disabled');
-  filtersForm.classList.add('ad-form--disabled');
-  var pinCoordinates = getMainPinCenterCoordinates();
-  setAddressInputValue('x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y);
-  disableFormFields();
-  roomsQuantity.removeEventListener('change', validateRooms);
-  roomsCapacity.removeEventListener('change', validateRooms);
-  mainPin.addEventListener('mousedown', mainPinMousedownHandler);
-  mainPin.addEventListener('keydown', mainPinKeydownHandler);
-}
-
-function enableKeksobooking() {
-  mapSection.classList.remove('map--faded');
-  guestNoticeForm.classList.remove('ad-form--disabled');
-  filtersForm.classList.remove('ad-form--disabled');
-  var pinCoordinates = getMainPinArrowCoordinates();
-  setAddressInputValue('x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y);
-  enableFormFields();
-  validateRooms();
-  renderHotelsPins(pinTemplateContent, hotels);
-  // renderHotelsCards(cardTemplateContent, hotels.slice(0, 1));
-  roomsQuantity.addEventListener('change', validateRooms);
-  roomsCapacity.addEventListener('change', validateRooms);
-  mainPin.removeEventListener('keydown', mainPinMousedownHandler);
-  mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
-}
-
-function mainPinKeydownHandler(event) {
-  if (event.key === 'Enter') {
-    enableKeksobooking();
-  }
-}
-
-function mainPinMousedownHandler(event) {
-  if (event.button === 0) {
-    enableKeksobooking();
-  }
-}
-
-function setAddressInputValue(address) {
-  guestNoticeForm.querySelector('#address').value = address;
-}
-
-function getMainPinArrowCoordinates() {
-  return {
-    x: mainPin.offsetLeft + mainPinOffset.x,
-    y: mainPin.offsetTop + mainPinOffset.y
-  };
-}
-
-function getMainPinCenterCoordinates() {
-  return {
-    x: mainPin.offsetLeft + (mainPin.offsetWidth / 2),
-    y: mainPin.offsetTop + (mainPin.offsetHeight / 2)
-  };
-}
-
-function disableFormFields() {
-  formFields.forEach(function (field) {
-    field.disabled = true;
-  });
-}
-
-function enableFormFields() {
-  formFields.forEach(function (field) {
-    field.disabled = false;
-  });
-}
-
-function validateRooms() {
-  var selectedRoom = roomsQuantity.selectedOptions[0].value;
-  var roomsCapacityOptions = Array.from(roomsCapacity.options);
-  var selectedAndDisabled = false;
-
-  roomsCapacityOptions.forEach(function (option) {
-    if (selectedRoom === '100') {
-      option.disabled = option.value !== '0';
-    } else {
-      option.disabled = !(option.value <= selectedRoom && option.value !== '0');
+  function mainPinMousedownHandler(event) {
+    if (event.button === 0) {
+      enableKeksobooking();
     }
-
-    option.style.color = option.disabled ? 'unset' : VALID_COLOR;
-    selectedAndDisabled = option.selected && option.disabled || selectedAndDisabled;
-
-  });
-
-  if (selectedAndDisabled) {
-    roomsCapacity.setCustomValidity(ROOMS_MESSAGE);
-    roomsCapacity.style.color = INVALID_COLOR;
-  } else {
-    roomsCapacity.setCustomValidity('');
-    roomsCapacity.style.color = 'unset';
   }
-}
 
-disableKeksobooking();
+  disableKeksobooking();
+
+})();
