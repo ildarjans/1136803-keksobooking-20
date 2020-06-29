@@ -6,8 +6,8 @@
     y: -84
   };
 
-  var mapSection = window.keksobookingMap.getMapSection();
-  var mainPin = window.keksobookingMap.getMainPin();
+  var mapSection = window.commonElements.getMapSection();
+  var mainPin = window.commonElements.getMainPin();
 
   var ROOMS_MESSAGE = 'Для заданного количества комнат выбранно не допустимое количество гостей';
   var INVALID_COLOR = '#a82929';

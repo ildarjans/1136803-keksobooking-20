@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var mapSection = window.keksobookingMap.getMapSection();
+  var mapSection = window.commonElements.getMapSection();
   var pinOffset = {
     x: -25,
     y: -70

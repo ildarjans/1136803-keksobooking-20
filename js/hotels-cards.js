@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var mapSection = window.keksobookingMap.getMapSection();
+  var mapSection = window.commonElements .getMapSection();
   var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
 
   function renderHotelsCards(hotelsArr) {
