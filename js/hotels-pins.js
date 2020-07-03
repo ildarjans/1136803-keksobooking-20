@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var mapSection = window.commonElements.getMapSection();
+  var mapSection = document.querySelector('section.map');
   var pinOffset = {
     x: -25,
     y: -70
