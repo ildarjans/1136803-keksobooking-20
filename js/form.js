@@ -18,6 +18,10 @@
   var filtersForm = mapSection.querySelector('.map__filters');
   var roomsQuantity = guestNoticeForm.querySelector('#room_number');
   var roomsCapacity = guestNoticeForm.querySelector('#capacity');
+  var accomodationType = guestNoticeForm.querySelector('#type');
+  var accomodationPrice = guestNoticeForm.querySelector('#price');
+  var checkinTime = guestNoticeForm.querySelector('#timein');
+  var checkoutTime = guestNoticeForm.querySelector('#timeout');
 
   function disableFormFields() {
     formFields.forEach(function (field) {
@@ -81,6 +85,9 @@
     filtersForm.classList.remove('ad-form--disabled');
     roomsQuantity.addEventListener('change', validateRooms);
     roomsCapacity.addEventListener('change', validateRooms);
+    accomodationType.addEventListener('change', setPriceForAccomodationType);
+    checkinTime.addEventListener('change', equalizeByCheckinTime);
+    checkoutTime.addEventListener('change', equalizeByCheckoutTime);
     setAddressInputValue('x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y);
     validateRooms();
     enableFormFields();
@@ -92,8 +99,35 @@
     filtersForm.classList.add('ad-form--disabled');
     roomsQuantity.removeEventListener('change', validateRooms);
     roomsCapacity.removeEventListener('change', validateRooms);
+    accomodationType.removeEventListener('change', setPriceForAccomodationType);
+    checkinTime.removeEventListener('change', equalizeByCheckinTime);
+    checkoutTime.removeEventListener('change', equalizeByCheckoutTime);
     setAddressInputValue('x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y);
     disableFormFields();
+  }
+
+  // #####################################
+  // ######     MODULE4-TASK3       ######
+  // #####################################
+
+  var print = console.log;
+  var accomodationTypeMinPrice = {
+    bungalo: 0,
+    flat: 1000,
+    house: 5000,
+    palace: 10000
+  };
+
+  function equalizeByCheckoutTime() {
+    checkinTime.value = this.value;
+  }
+
+  function equalizeByCheckinTime() {
+    checkoutTime.value = this.value;
+  }
+
+  function setPriceForAccomodationType() {
+    accomodationPrice.min = accomodationTypeMinPrice[this.value];
   }
 
   window.guestNoticeForm = {
