@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  // var url = 'https://javascript.pages.academy/keksobooking/data';
   var errorMessages = {
     statusError: function (xhr) {
       return 'Код ошибки ' + xhr.status + ', ' + xhr.statusText +
@@ -21,7 +20,7 @@
       if (xhr.status === 200) {
         successCallback(xhr.response);
       } else {
-        errorCallback(errorMessages.statusError());
+        errorCallback(errorMessages.statusError(xhr));
       }
     });
 

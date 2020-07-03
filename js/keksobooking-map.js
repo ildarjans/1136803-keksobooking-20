@@ -1,53 +1,31 @@
 'use strict';
 
 (function () {
-  var url = 'https://javascript.pages.academy/keksobooking/data';
-  var mapSection = window.commonElements.getMapSection();
-  var mainPin = window.commonElements.getMainPin();
-  var activateForm = window.guestNoticeForm.activateForm;
-  var deactivateForm = window.guestNoticeForm.deactivateForm;
-  var renderHotelsPins = window.hotelsPins.renderPins;
-  var renderHotelsCards = window.hotelsCards.renderCards;
-  var hotelsLoader = window.keksobookingAjax.load;
-  var hotels = null;
-  hotelsLoader(url, successCallback, errorCallback);
+  var mainPinOffset = {
+    x: -32.5,
+    y: -84
+  };
 
-  function disableKeksobooking() {
-    mapSection.classList.add('map--faded');
-    mainPin.addEventListener('mousedown', mainPinMousedownHandler);
-    mainPin.addEventListener('keydown', mainPinKeydownHandler);
-    deactivateForm();
+  var mapSection = document.querySelector('section.map');
+  var mainPin = mapSection.querySelector('.map__pin--main');
+
+  function getMainPinArrowCoordinates() {
+    return {
+      x: mainPin.offsetLeft + mainPinOffset.x,
+      y: mainPin.offsetTop + mainPinOffset.y
+    };
   }
 
-  function enableKeksobooking() {
-    mapSection.classList.remove('map--faded');
-    mainPin.removeEventListener('keydown', mainPinMousedownHandler);
-    mainPin.removeEventListener('mousedown', mainPinMousedownHandler);
-    activateForm();
-    renderHotelsPins(hotels);
-    renderHotelsCards(hotels.slice(0, 1));
+  function getMainPinCenterCoordinates() {
+    return {
+      x: mainPin.offsetLeft + (mainPin.offsetWidth / 2),
+      y: mainPin.offsetTop + (mainPin.offsetHeight / 2)
+    };
   }
 
-  function mainPinKeydownHandler(event) {
-    if (event.key === 'Enter') {
-      enableKeksobooking();
-    }
-  }
-
-  function mainPinMousedownHandler(event) {
-    if (event.button === 0) {
-      enableKeksobooking();
-    }
-  }
-
-  function successCallback(response) {
-    hotels = response;
-  }
-
-  function errorCallback(message) {
-    console.log(message);
-  }
-
-  disableKeksobooking();
+  window.keksobookingMap = {
+    getMainPinArrowCoordinates: getMainPinArrowCoordinates,
+    getMainPinCenterCoordinates: getMainPinCenterCoordinates
+  };
 
 })();
