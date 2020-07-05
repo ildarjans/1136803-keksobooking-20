@@ -33,7 +33,7 @@
     });
   }
 
-  window.keksobookingAjax = {
+  window.ajax = {
     load: createXHR
   };
 
