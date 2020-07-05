@@ -23,9 +23,21 @@
     };
   }
 
+  function activateMap() {
+    mapSection.classList.remove('map--faded');
+  }
+
+  function deactivateMap() {
+    mapSection.classList.add('map--faded');
+  }
+
   window.keksobookingMap = {
-    getMainPinArrowCoordinates: getMainPinArrowCoordinates,
-    getMainPinCenterCoordinates: getMainPinCenterCoordinates
+    mainPin: mainPin,
+    mapSection: mapSection,
+    activateMap: activateMap,
+    deactivateMap: deactivateMap,
+    getMainPinCenterCoordinates: getMainPinCenterCoordinates,
+    getMainPinArrowCoordinates: getMainPinArrowCoordinates
   };
 
 })();
