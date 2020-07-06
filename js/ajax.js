@@ -33,8 +33,31 @@
     });
   }
 
+  function uploadXHR(url, successCallback, errorCallback, formData) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+    xhr.send(formData);
+
+    xhr.addEventListener('load', function () {
+      if (xhr.status === 200) {
+        successCallback(xhr.response);
+      } else {
+        errorCallback(errorMessages.statusError(xhr));
+      }
+    });
+
+    xhr.addEventListener('error', function () {
+      errorCallback(errorMessages.unknownError);
+    });
+
+    xhr.addEventListener('timeout', function () {
+      errorCallback(errorMessages.timeoutExpired);
+    });
+  }
+
   window.ajax = {
-    load: createXHR
+    load: createXHR,
+    upload: uploadXHR
   };
 
 })();

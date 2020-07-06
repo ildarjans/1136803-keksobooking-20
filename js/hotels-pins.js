@@ -13,7 +13,7 @@
     for (var i = 0; i < hotelsArray.length; i++) {
       renderPinTemplate(fragment, pinTemplateContent, hotelsArray[i]);
     }
-    window.keksobookingMap.mapSection.append(fragment);
+    window.keksobookingMap.pinsContainer.append(fragment);
   }
 
   function renderPinTemplate(parent, pinTemplate, hotel) {
@@ -23,6 +23,7 @@
     pin.style = 'left:' + (hotel.location.x + pinOffset.x) + 'px; top: ' + (hotel.location.y + pinOffset.y) + 'px;';
     parent.append(pin);
   }
+
 
   window.hotelsPins = {
     renderPins: renderHotelsPins

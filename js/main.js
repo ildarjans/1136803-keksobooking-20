@@ -52,4 +52,9 @@
 
   disableKeksobooking();
 
+  window.main = {
+    enableKeksobooking: enableKeksobooking,
+    disableKeksobooking: disableKeksobooking
+  };
+
 })();

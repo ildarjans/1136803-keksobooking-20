@@ -7,6 +7,7 @@
   };
 
   var mapSection = document.querySelector('section.map');
+  var pinsContainer = document.querySelector('.map__pins');
   var mainPin = mapSection.querySelector('.map__pin--main');
 
   function getMainPinArrowCoordinates() {
@@ -31,9 +32,26 @@
     mapSection.classList.add('map--faded');
   }
 
+  function removeRenderedPins() {
+    var pins = pinsContainer.querySelectorAll('[class=map__pin]');
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
+  }
+
+  function removeRenderedCards() {
+    var cards = mapSection.querySelectorAll('article.map__card.popup');
+    cards.forEach(function (card) {
+      card.remove();
+    });
+  }
+
   window.keksobookingMap = {
     mainPin: mainPin,
     mapSection: mapSection,
+    pinsContainer: pinsContainer,
+    removeRenderedPins: removeRenderedPins,
+    removeRenderedCards: removeRenderedCards,
     activateMap: activateMap,
     deactivateMap: deactivateMap,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
