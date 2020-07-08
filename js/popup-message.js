@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var HIDE_POPUP_DELAY = 3000;
+  var HIDE_POPUP_DELAY = 5000;
   var containerStyle = [
     'align-items: center',
     'background-color: rgba(0, 0, 0, 0.75)',
@@ -41,35 +41,37 @@
     container.append(paragraph);
     container.append(closeButton);
     document.body.append(container);
-    closeButton.addEventListener('click', clickСloseButtonHandler);
   }
 
   function clickСloseButtonHandler() {
     hidePopup();
-    container.removeEventListener('click', clickСloseButtonHandler);
+  }
+
+  function clickWindowHandler(event) {
+    if (event.target !== container) {
+      hidePopup();
+    }
   }
 
   function hidePopup() {
     container.style.display = 'none';
+    closeButton.removeEventListener('click', clickСloseButtonHandler);
+    window.removeEventListener('click', clickWindowHandler);
   }
 
-  function showPopup(delay) {
-    delay = delay === undefined ? HIDE_POPUP_DELAY : delay;
+  function showPopup(message) {
     container.style.display = 'flex';
-    setTimeout(function () {
-      closeButton.removeEventListener('click', clickСloseButtonHandler);
-      hidePopup();
-    }, delay);
-  }
-
-  function insertText(message) {
     paragraph.innerText = message;
+    closeButton.addEventListener('click', clickСloseButtonHandler);
+    window.addEventListener('click', clickWindowHandler);
+    setTimeout(function () {
+      hidePopup();
+    }, HIDE_POPUP_DELAY);
   }
 
   renderPopup();
 
   window.popupMessage = {
-    insertText: insertText,
     show: showPopup,
   };
 
