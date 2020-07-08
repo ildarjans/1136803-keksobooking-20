@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var HOTELS_LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
+  var HOTELS_LOAD_URL = 'https://javascript.pages.academy/keksobooking/data4';
 
   var mainPin = window.keksobookingMap.mainPin;
   var activateMap = window.keksobookingMap.activateMap;
@@ -46,8 +46,7 @@
   }
 
   function errorCallback(message) {
-    window.popupMessage.insertText(message);
-    window.popupMessage.show();
+    window.popupMessage.show(message);
   }
 
   disableKeksobooking();
