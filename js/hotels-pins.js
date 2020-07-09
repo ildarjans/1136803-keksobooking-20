@@ -13,14 +13,16 @@
     for (var i = 0; i < hotelsArray.length; i++) {
       renderPinTemplate(fragment, pinTemplateContent, hotelsArray[i]);
     }
-    window.keksobookingMap.mapSection.append(fragment);
+    window.keksobookingMap.pinContainer.append(fragment);
   }
 
   function renderPinTemplate(parent, pinTemplate, hotel) {
     var pin = pinTemplate.cloneNode(true);
     pin.children[0].src = hotel.author.avatar;
     pin.children[0].alt = hotel.offer.title;
-    pin.style = 'left:' + (hotel.location.x + pinOffset.x) + 'px; top: ' + (hotel.location.y + pinOffset.y) + 'px;';
+    pin.style.left = hotel.location.x + pinOffset.x + 'px';
+    pin.style.top = hotel.location.y + pinOffset.y + 'px';
+    pin.dataset.id = hotel.id;
     parent.append(pin);
   }
 

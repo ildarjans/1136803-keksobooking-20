@@ -8,6 +8,7 @@
 
   var mapSection = document.querySelector('section.map');
   var mainPin = mapSection.querySelector('.map__pin--main');
+  var pinContainer = mapSection.querySelector('.map__pins');
 
   function getMainPinArrowCoordinates() {
     return {
@@ -31,13 +32,16 @@
     mapSection.classList.add('map--faded');
   }
 
+
   window.keksobookingMap = {
     mainPin: mainPin,
     mapSection: mapSection,
+    pinContainer: pinContainer,
     activateMap: activateMap,
     deactivateMap: deactivateMap,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
     getMainPinArrowCoordinates: getMainPinArrowCoordinates
   };
+
 
 })();

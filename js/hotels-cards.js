@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var mapSection = window.keksobookingMap.mapSection;
   var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
 
@@ -10,7 +11,9 @@
     for (var i = 0; i < hotels.length; i++) {
       renderCardTemplate(fragment, cardTemplateContent, hotels[i]);
     }
+
     mapSection.insertBefore(fragment, mapFiltersContainer);
+    mapSection.querySelector('.popup__close').focus();
   }
 
   function renderCardTemplate(parent, cardTemplate, hotel) {
@@ -23,9 +26,11 @@
     card.querySelector('.popup__text--capacity').textContent = hotel.offer.rooms + ' комнаты для ' + hotel.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
     card.querySelector('.popup__description').textContent = hotel.offer.description;
-
+    setPopupCloseButton(card.querySelector('.popup__close'));
     renderCardFeatures(card, hotel.offer.features);
     renderCardPhotos(card, hotel.offer.photos);
+    card.style.display = 'none';
+    card.dataset.id = hotel.id;
     parent.append(card);
   }
 
@@ -60,6 +65,25 @@
         return 'Бунгало';
     }
     return type;
+  }
+
+  // #####################################
+  // ######     MODULE4-TASK3       ######
+  // #####################################
+  function setPopupCloseButton(closePopup) {
+    closePopup.tabIndex = 0;
+    closePopup.addEventListener('click', closePopupClickHandler);
+    closePopup.addEventListener('keydown', closePopupEscapeHandler);
+  }
+
+  function closePopupClickHandler(event) {
+    event.target.offsetParent.remove();
+  }
+
+  function closePopupEscapeHandler(event) {
+    if (event.key === 'Escape') {
+      event.target.offsetParent.remove();
+    }
   }
 
   window.hotelsCards = {
