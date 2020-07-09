@@ -1,20 +1,19 @@
 'use strict';
 
 (function () {
-  var mapSection = window.commonElements.getMapSection();
   var pinOffset = {
     x: -25,
     y: -70
   };
+
   var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
 
   function renderHotelsPins(hotelsArray) {
-    var mapPins = mapSection.querySelector('.map__pins');
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < hotelsArray.length; i++) {
       renderPinTemplate(fragment, pinTemplateContent, hotelsArray[i]);
     }
-    mapPins.append(fragment);
+    window.keksobookingMap.mapSection.append(fragment);
   }
 
   function renderPinTemplate(parent, pinTemplate, hotel) {

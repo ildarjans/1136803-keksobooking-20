@@ -1,14 +1,14 @@
 'use strict';
 
 (function () {
-  var mapSection = window.commonElements .getMapSection();
+  var mapSection = window.keksobookingMap.mapSection;
   var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
 
-  function renderHotelsCards(hotelsArr) {
+  function renderHotelsCards(hotels) {
     var mapFiltersContainer = mapSection.querySelector('.map__filters-container');
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < hotelsArr.length; i++) {
-      renderCardTemplate(fragment, cardTemplateContent, hotelsArr[i]);
+    for (var i = 0; i < hotels.length; i++) {
+      renderCardTemplate(fragment, cardTemplateContent, hotels[i]);
     }
     mapSection.insertBefore(fragment, mapFiltersContainer);
   }
