@@ -109,7 +109,6 @@
     var cardCloseButton = currentCard.querySelector('.popup__close');
     window.hotelsCards.removeClosePopupListeners(cardCloseButton);
     currentCard.remove();
-
   }
 
   function getPinId(target) {

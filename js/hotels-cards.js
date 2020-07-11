@@ -73,15 +73,13 @@
   }
 
   function closePopupClickHandler(event) {
-    var closePopup = this;
-    removeClosePopupListeners(closePopup);
+    removeClosePopupListeners(event.target);
     event.target.offsetParent.remove();
   }
 
   function closePopupEscapeHandler(event) {
     if (event.key === 'Escape') {
-      var closePopup = this;
-      removeClosePopupListeners(closePopup);
+      removeClosePopupListeners(event.target);
       event.target.offsetParent.remove();
     }
   }
