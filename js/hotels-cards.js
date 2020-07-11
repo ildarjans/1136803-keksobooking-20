@@ -4,14 +4,11 @@
 
   var mapSection = window.keksobookingMap.mapSection;
   var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
+  var mapFiltersContainer = mapSection.querySelector('.map__filters-container');
 
-  function renderHotelsCards(hotels) {
-    var mapFiltersContainer = mapSection.querySelector('.map__filters-container');
+  function renderHotelCard(hotel) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < hotels.length; i++) {
-      renderCardTemplate(fragment, cardTemplateContent, hotels[i]);
-    }
-
+    renderCardTemplate(fragment, cardTemplateContent, hotel);
     mapSection.insertBefore(fragment, mapFiltersContainer);
     mapSection.querySelector('.popup__close').focus();
   }
@@ -29,7 +26,6 @@
     setPopupCloseButton(card.querySelector('.popup__close'));
     renderCardFeatures(card, hotel.offer.features);
     renderCardPhotos(card, hotel.offer.photos);
-    card.style.display = 'none';
     card.dataset.id = hotel.id;
     parent.append(card);
   }
@@ -77,17 +73,27 @@
   }
 
   function closePopupClickHandler(event) {
+    var closePopup = this;
+    removeClosePopupListeners(closePopup);
     event.target.offsetParent.remove();
   }
 
   function closePopupEscapeHandler(event) {
     if (event.key === 'Escape') {
+      var closePopup = this;
+      removeClosePopupListeners(closePopup);
       event.target.offsetParent.remove();
     }
   }
 
+  function removeClosePopupListeners(closePopup) {
+    closePopup.removeEventListener('click', closePopupClickHandler);
+    closePopup.removeEventListener('keydown', closePopupEscapeHandler);
+  }
+
   window.hotelsCards = {
-    renderCards: renderHotelsCards
+    renderCard: renderHotelCard,
+    removeClosePopupListeners: removeClosePopupListeners
   };
 
 })();

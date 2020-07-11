@@ -11,8 +11,7 @@
   var activateForm = window.guestNoticeForm.activateForm;
   var deactivateForm = window.guestNoticeForm.deactivateForm;
   var renderHotelsPins = window.hotelsPins.renderPins;
-  var renderHotelsCards = window.hotelsCards.renderCards;
-  var mapCards = null;
+  var renderHotelCard = window.hotelsCards.renderCard;
   var mapPins = null;
   var hotels = null;
 
@@ -48,7 +47,6 @@
     hotels = response;
     setHotelId();
     renderHotelsPins(hotels);
-    renderHotelsCards(hotels);
     activatePins();
   }
 
@@ -86,20 +84,32 @@
   }
 
   function pinClickHandler(event) {
-    showPinAssociatedCard(event);
+    renderPinAssociatedCard(event);
   }
 
   function pinKeyEnterHandler(event) {
     event.preventDefault();
     if (event.key === 'Enter') {
-      showPinAssociatedCard(event);
+      renderPinAssociatedCard(event);
     }
   }
 
-  function showPinAssociatedCard(event) {
+  function renderPinAssociatedCard(event) {
     var pinId = getPinId(event.target);
     var findedHotel = findHotelById(pinId);
-    showSingleHotelCard(findedHotel);
+    removeCurrentCard();
+    renderHotelCard(findedHotel);
+  }
+
+  function removeCurrentCard() {
+    var currentCard = mapSection.querySelector('.map__card.popup');
+    if (!currentCard) {
+      return;
+    }
+    var cardCloseButton = currentCard.querySelector('.popup__close');
+    window.hotelsCards.removeClosePopupListeners(cardCloseButton);
+    currentCard.remove();
+
   }
 
   function getPinId(target) {
@@ -113,17 +123,6 @@
       }
     }
     return hotels[i];
-  }
-
-  function showSingleHotelCard(hotel) {
-    mapCards = mapCards || mapSection.querySelectorAll('.map__card.popup');
-    mapCards.forEach(function (card) {
-      if (card.dataset.id === hotel.id) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
-    });
   }
 
   disableKeksobooking();
