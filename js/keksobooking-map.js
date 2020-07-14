@@ -2,25 +2,36 @@
 
 (function () {
   var mainPinOffset = {
-    x: -32.5,
-    y: -84
+    x: 32.5,
+    y: 84
+  };
+
+  var mainPinMoveArea = {
+    Y_MIN: 46,
+    Y_MAX: 546,
+    X_MIN: mainPinOffset.x * (-1),
+    getXMax: function () {
+      return mapSection.offsetWidth - mainPinOffset.x;
+    },
   };
 
   var mapSection = document.querySelector('section.map');
   var mainPin = mapSection.querySelector('.map__pin--main');
   var pinContainer = mapSection.querySelector('.map__pins');
 
+  mainPin.style.zIndex = 100;
+
   function getMainPinArrowCoordinates() {
     return {
-      x: mainPin.offsetLeft + mainPinOffset.x,
-      y: mainPin.offsetTop + mainPinOffset.y
+      x: Math.floor(mainPin.offsetLeft + mainPinOffset.x),
+      y: Math.floor(mainPin.offsetTop + mainPinOffset.y)
     };
   }
 
   function getMainPinCenterCoordinates() {
     return {
-      x: mainPin.offsetLeft + (mainPin.offsetWidth / 2),
-      y: mainPin.offsetTop + (mainPin.offsetHeight / 2)
+      x: Math.floor(mainPin.offsetLeft + (mainPin.offsetWidth / 2)),
+      y: Math.floor(mainPin.offsetTop + (mainPin.offsetHeight / 2))
     };
   }
 
@@ -40,7 +51,8 @@
     activateMap: activateMap,
     deactivateMap: deactivateMap,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
-    getMainPinArrowCoordinates: getMainPinArrowCoordinates
+    getMainPinArrowCoordinates: getMainPinArrowCoordinates,
+    mainPinMoveArea: mainPinMoveArea
   };
 
 

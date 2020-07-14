@@ -145,7 +145,8 @@
 
   window.guestNoticeForm = {
     activateForm: activateForm,
-    deactivateForm: deactivateForm
+    deactivateForm: deactivateForm,
+    addressInput: addressInput
   };
 
 })();
