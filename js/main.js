@@ -84,31 +84,44 @@
   }
 
   function pinClickHandler(event) {
-    renderPinAssociatedCard(event);
+    var pinId = getPinId(event.target);
+    var currentCard = mapSection.querySelector('.map__card.popup');
+    if (!currentCard) {
+      renderPinAssociatedCard(pinId);
+    } else if (currentCard.dataset.id === pinId) {
+      return;
+    } else {
+      removeCurrentCard(currentCard);
+      renderPinAssociatedCard(pinId);
+    }
   }
 
   function pinKeyEnterHandler(event) {
+    if (event.key !== 'Enter') {
+      return;
+    }
     event.preventDefault();
-    if (event.key === 'Enter') {
-      renderPinAssociatedCard(event);
+    var pinId = getPinId(event.target);
+    var currentCard = mapSection.querySelector('.map__card.popup');
+    if (!currentCard) {
+      renderPinAssociatedCard(pinId);
+    } else if (currentCard.dataset.id === pinId) {
+      return;
+    } else {
+      removeCurrentCard(currentCard);
+      renderPinAssociatedCard(pinId);
     }
   }
 
-  function renderPinAssociatedCard(event) {
-    var pinId = getPinId(event.target);
-    var findedHotel = findHotelById(pinId);
-    removeCurrentCard();
+  function renderPinAssociatedCard(id) {
+    var findedHotel = findHotelById(id);
     renderHotelCard(findedHotel);
   }
 
-  function removeCurrentCard() {
-    var currentCard = mapSection.querySelector('.map__card.popup');
-    if (!currentCard) {
-      return;
-    }
-    var cardCloseButton = currentCard.querySelector('.popup__close');
+  function removeCurrentCard(card) {
+    var cardCloseButton = card.querySelector('.popup__close');
     window.hotelsCards.removeClosePopupListeners(cardCloseButton);
-    currentCard.remove();
+    card.remove();
   }
 
   function getPinId(target) {

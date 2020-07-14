@@ -69,8 +69,8 @@
     addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
     accomodationType.addEventListener('change', changeAccomodationType);
     accomodationPrice.addEventListener('change', changeAccomodationPrice);
-    checkinTime.addEventListener('change', equalizeByCheckinTime);
-    checkoutTime.addEventListener('change', equalizeByCheckoutTime);
+    checkinTime.addEventListener('change', syncronizeCheckinTime);
+    checkoutTime.addEventListener('change', syncronizeCheckoutTime);
     validateRooms();
     enableFormFields();
   }
@@ -84,8 +84,8 @@
     addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
     accomodationType.removeEventListener('change', changeAccomodationType);
     accomodationPrice.removeEventListener('change', changeAccomodationPrice);
-    checkinTime.removeEventListener('change', equalizeByCheckinTime);
-    checkoutTime.removeEventListener('change', equalizeByCheckoutTime);
+    checkinTime.removeEventListener('change', syncronizeCheckinTime);
+    checkoutTime.removeEventListener('change', syncronizeCheckoutTime);
     disableFormFields();
   }
 
@@ -101,31 +101,31 @@
   // ######     MODULE4-TASK3       ######
   // #####################################
 
-  var minPriceForEachType = {
+  var minPrices = {
     'bungalo': 0,
     'flat': 1000,
     'house': 5000,
     'palace': 10000
   };
 
-  function equalizeByCheckoutTime() {
+  function syncronizeCheckoutTime() {
     checkinTime.value = checkoutTime.value;
   }
 
-  function equalizeByCheckinTime() {
+  function syncronizeCheckinTime() {
     checkoutTime.value = checkinTime.value;
   }
 
   function setMinPriceForAccomodationType() {
-    accomodationPrice.min = minPriceForEachType[accomodationType.value];
-    accomodationPrice.placeholder = minPriceForEachType[accomodationType.value];
+    accomodationPrice.min = minPrices[accomodationType.value];
+    accomodationPrice.placeholder = minPrices[accomodationType.value];
   }
 
   function validateAccomodationTypeAndPrice() {
     var selectedType = accomodationType.selectedOptions[0].value;
 
-    if (minPriceForEachType[selectedType] > accomodationPrice.value) {
-      accomodationPrice.setCustomValidity(MIN_PRICE_MESSAGE + minPriceForEachType[selectedType]);
+    if (minPrices[selectedType] > accomodationPrice.value) {
+      accomodationPrice.setCustomValidity(MIN_PRICE_MESSAGE + minPrices[selectedType]);
       accomodationPrice.style.color = INVALID_COLOR;
     } else {
       accomodationPrice.setCustomValidity('');
