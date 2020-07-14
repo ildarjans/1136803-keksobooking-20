@@ -84,31 +84,44 @@
   }
 
   function pinClickHandler(event) {
-    renderPinAssociatedCard(event);
+    var pinId = getPinId(event.target);
+    var currentCard = mapSection.querySelector('.map__card.popup');
+    if (!currentCard) {
+      renderPinAssociatedCard(pinId);
+    } else if (currentCard.dataset.id === pinId) {
+      return;
+    } else {
+      removeCurrentCard(currentCard);
+      renderPinAssociatedCard(pinId);
+    }
   }
 
   function pinKeyEnterHandler(event) {
+    if (event.key !== 'Enter') {
+      return;
+    }
     event.preventDefault();
-    if (event.key === 'Enter') {
-      renderPinAssociatedCard(event);
+    var pinId = getPinId(event.target);
+    var currentCard = mapSection.querySelector('.map__card.popup');
+    if (!currentCard) {
+      renderPinAssociatedCard(pinId);
+    } else if (currentCard.dataset.id === pinId) {
+      return;
+    } else {
+      removeCurrentCard(currentCard);
+      renderPinAssociatedCard(pinId);
     }
   }
 
-  function renderPinAssociatedCard(event) {
-    var pinId = getPinId(event.target);
-    var findedHotel = findHotelById(pinId);
-    removeCurrentCard();
+  function renderPinAssociatedCard(id) {
+    var findedHotel = findHotelById(id);
     renderHotelCard(findedHotel);
   }
 
-  function removeCurrentCard() {
-    var currentCard = mapSection.querySelector('.map__card.popup');
-    if (!currentCard) {
-      return;
-    }
-    var cardCloseButton = currentCard.querySelector('.popup__close');
+  function removeCurrentCard(card) {
+    var cardCloseButton = card.querySelector('.popup__close');
     window.hotelsCards.removeClosePopupListeners(cardCloseButton);
-    currentCard.remove();
+    card.remove();
   }
 
   function getPinId(target) {
@@ -122,6 +135,59 @@
       }
     }
     return hotels[i];
+  }
+
+  // #####################################
+  // ######     MODULE5-TASK3       ######
+  // #####################################
+
+  var mainPinMoveArea = window.keksobookingMap.mainPinMoveArea;
+
+  mainPin.addEventListener('mousedown', function () {
+    mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
+    mainPin.addEventListener('mouseup', mainPinMouseupHandler);
+    mainPin.addEventListener('mouseleave', mainPinMouseleaveHandler);
+  });
+
+  function mainPinMousemoveHandler(event) {
+    var stopPosition = {
+      x: mainPin.offsetLeft + event.movementX,
+      y: mainPin.offsetTop + event.movementY
+    };
+
+    if (stopPosition.x > mainPinMoveArea.getXMax()) {
+      stopPosition.x = mainPinMoveArea.getXMax();
+    } else if (stopPosition.x < mainPinMoveArea.X_MIN) {
+      stopPosition.x = mainPinMoveArea.X_MIN;
+    }
+
+    if (stopPosition.y > mainPinMoveArea.Y_MAX) {
+      stopPosition.y = mainPinMoveArea.Y_MAX;
+    } else if (stopPosition.y < mainPinMoveArea.Y_MIN) {
+      stopPosition.y = mainPinMoveArea.Y_MIN;
+    }
+
+    mainPin.style.left = stopPosition.x + 'px';
+    mainPin.style.top = stopPosition.y + 'px';
+    setMainPinAddressInputValue();
+  }
+
+  function mainPinMouseupHandler() {
+    setMainPinAddressInputValue();
+    mainPin.removeEventListener('mousemove', mainPinMousemoveHandler);
+    mainPin.removeEventListener('mouseup', mainPinMouseupHandler);
+    mainPin.removeEventListener('mouseleave', mainPinMouseleaveHandler);
+  }
+
+  function mainPinMouseleaveHandler() {
+    mainPin.removeEventListener('mousemove', mainPinMousemoveHandler);
+    mainPin.removeEventListener('mouseup', mainPinMouseupHandler);
+    mainPin.removeEventListener('mouseleave', mainPinMouseleaveHandler);
+  }
+
+  function setMainPinAddressInputValue() {
+    var pinArrowCoordinates = window.keksobookingMap.getMainPinArrowCoordinates();
+    window.guestNoticeForm.addressInput.value = 'x: ' + pinArrowCoordinates.x + ', y: ' + pinArrowCoordinates.y;
   }
 
   disableKeksobooking();
