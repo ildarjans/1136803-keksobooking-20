@@ -3,6 +3,7 @@
 (function () {
 
   var ROOMS_MESSAGE = 'Для заданного количества комнат выбранно не допустимое количество гостей';
+  var MIN_PRICE_MESSAGE = 'Для выбранного типа жилья цена не может быть ниже ';
   var INVALID_COLOR = '#a82929';
   var VALID_COLOR = '#000000';
 
@@ -16,6 +17,10 @@
   var filtersForm = mapSection.querySelector('.map__filters');
   var roomsQuantity = guestNoticeForm.querySelector('#room_number');
   var roomsCapacity = guestNoticeForm.querySelector('#capacity');
+  var accomodationType = guestNoticeForm.querySelector('#type');
+  var accomodationPrice = guestNoticeForm.querySelector('#price');
+  var checkinTime = guestNoticeForm.querySelector('#timein');
+  var checkoutTime = guestNoticeForm.querySelector('#timeout');
 
   function disableFormFields() {
     formFields.forEach(function (field) {
@@ -59,9 +64,13 @@
     var pinCoordinates = getMainPinArrowCoordinates();
     guestNoticeForm.classList.remove('ad-form--disabled');
     filtersForm.classList.remove('ad-form--disabled');
-    roomsQuantity.addEventListener('change', validateRooms);
-    roomsCapacity.addEventListener('change', validateRooms);
+    roomsQuantity.addEventListener('change', changeRoomsQuantity);
+    roomsCapacity.addEventListener('change', changeRoomsCapacity);
     addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
+    accomodationType.addEventListener('change', changeAccomodationType);
+    accomodationPrice.addEventListener('change', changeAccomodationPrice);
+    checkinTime.addEventListener('change', equalizeByCheckinTime);
+    checkoutTime.addEventListener('change', equalizeByCheckoutTime);
     validateRooms();
     enableFormFields();
   }
@@ -70,10 +79,68 @@
     var pinCoordinates = getMainPinCenterCoordinates();
     guestNoticeForm.classList.add('ad-form--disabled');
     filtersForm.classList.add('ad-form--disabled');
-    roomsQuantity.removeEventListener('change', validateRooms);
-    roomsCapacity.removeEventListener('change', validateRooms);
+    roomsQuantity.removeEventListener('change', changeRoomsQuantity);
+    roomsCapacity.removeEventListener('change', changeRoomsCapacity);
     addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
+    accomodationType.removeEventListener('change', changeAccomodationType);
+    accomodationPrice.removeEventListener('change', changeAccomodationPrice);
+    checkinTime.removeEventListener('change', equalizeByCheckinTime);
+    checkoutTime.removeEventListener('change', equalizeByCheckoutTime);
     disableFormFields();
+  }
+
+  function changeRoomsQuantity() {
+    validateRooms();
+  }
+
+  function changeRoomsCapacity() {
+    validateRooms();
+  }
+
+  // #####################################
+  // ######     MODULE4-TASK3       ######
+  // #####################################
+
+  var minPriceForEachType = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000
+  };
+
+  function equalizeByCheckoutTime() {
+    checkinTime.value = checkoutTime.value;
+  }
+
+  function equalizeByCheckinTime() {
+    checkoutTime.value = checkinTime.value;
+  }
+
+  function setMinPriceForAccomodationType() {
+    accomodationPrice.min = minPriceForEachType[accomodationType.value];
+    accomodationPrice.placeholder = minPriceForEachType[accomodationType.value];
+  }
+
+  function validateAccomodationTypeAndPrice() {
+    var selectedType = accomodationType.selectedOptions[0].value;
+
+    if (minPriceForEachType[selectedType] > accomodationPrice.value) {
+      accomodationPrice.setCustomValidity(MIN_PRICE_MESSAGE + minPriceForEachType[selectedType]);
+      accomodationPrice.style.color = INVALID_COLOR;
+    } else {
+      accomodationPrice.setCustomValidity('');
+      accomodationPrice.style.color = 'unset';
+    }
+  }
+
+  function changeAccomodationType() {
+    setMinPriceForAccomodationType();
+    validateAccomodationTypeAndPrice();
+  }
+
+  function changeAccomodationPrice() {
+    setMinPriceForAccomodationType();
+    validateAccomodationTypeAndPrice();
   }
 
   window.guestNoticeForm = {

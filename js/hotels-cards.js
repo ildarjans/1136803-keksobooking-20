@@ -1,16 +1,16 @@
 'use strict';
 
 (function () {
+
   var mapSection = window.keksobookingMap.mapSection;
   var cardTemplateContent = document.querySelector('template#card').content.querySelector('.map__card.popup');
+  var mapFiltersContainer = mapSection.querySelector('.map__filters-container');
 
-  function renderHotelsCards(hotels) {
-    var mapFiltersContainer = mapSection.querySelector('.map__filters-container');
+  function renderHotelCard(hotel) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < hotels.length; i++) {
-      renderCardTemplate(fragment, cardTemplateContent, hotels[i]);
-    }
+    renderCardTemplate(fragment, cardTemplateContent, hotel);
     mapSection.insertBefore(fragment, mapFiltersContainer);
+    mapSection.querySelector('.popup__close').focus();
   }
 
   function renderCardTemplate(parent, cardTemplate, hotel) {
@@ -23,9 +23,10 @@
     card.querySelector('.popup__text--capacity').textContent = hotel.offer.rooms + ' комнаты для ' + hotel.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + hotel.offer.checkin + ', выезд до ' + hotel.offer.checkout;
     card.querySelector('.popup__description').textContent = hotel.offer.description;
-
+    setPopupCloseButton(card.querySelector('.popup__close'));
     renderCardFeatures(card, hotel.offer.features);
     renderCardPhotos(card, hotel.offer.photos);
+    card.dataset.id = hotel.id;
     parent.append(card);
   }
 
@@ -62,8 +63,35 @@
     return type;
   }
 
+  // #####################################
+  // ######     MODULE4-TASK3       ######
+  // #####################################
+  function setPopupCloseButton(closePopup) {
+    closePopup.tabIndex = 0;
+    closePopup.addEventListener('click', closePopupClickHandler);
+    closePopup.addEventListener('keydown', closePopupEscapeHandler);
+  }
+
+  function closePopupClickHandler(event) {
+    removeClosePopupListeners(event.target);
+    event.target.offsetParent.remove();
+  }
+
+  function closePopupEscapeHandler(event) {
+    if (event.key === 'Escape') {
+      removeClosePopupListeners(event.target);
+      event.target.offsetParent.remove();
+    }
+  }
+
+  function removeClosePopupListeners(closePopup) {
+    closePopup.removeEventListener('click', closePopupClickHandler);
+    closePopup.removeEventListener('keydown', closePopupEscapeHandler);
+  }
+
   window.hotelsCards = {
-    renderCards: renderHotelsCards
+    renderCard: renderHotelCard,
+    removeClosePopupListeners: removeClosePopupListeners
   };
 
 })();
