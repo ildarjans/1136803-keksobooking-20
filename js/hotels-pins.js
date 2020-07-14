@@ -8,10 +8,12 @@
 
   var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
 
-  function renderHotelsPins(hotelsArray) {
+  function renderHotelsPins(hotelsObj) {
+    var hotelsId = Object.keys(hotelsObj);
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < hotelsArray.length; i++) {
-      renderPinTemplate(fragment, pinTemplateContent, hotelsArray[i]);
+    for (var i = 0; i < hotelsId.length; i++) {
+      var id = hotelsId[i];
+      renderPinTemplate(fragment, pinTemplateContent, hotelsObj[id]);
     }
     window.keksobookingMap.pinContainer.append(fragment);
   }
