@@ -13,7 +13,7 @@
   var renderHotelsPins = window.hotelsPins.renderPins;
   var renderHotelCard = window.hotelsCards.renderCard;
   var mapPins = null;
-  var hotels = null;
+  var hotels = {};
 
   function disableKeksobooking() {
     mainPin.addEventListener('mousedown', mainPinMousedownHandler);
@@ -44,8 +44,7 @@
   }
 
   function successCallback(response) {
-    hotels = response;
-    setHotelId();
+    getHotelsDictionary(response);
     renderHotelsPins(hotels);
     activatePins();
   }
@@ -54,10 +53,10 @@
     window.popupMessage.show(message);
   }
 
-  function setHotelId() {
-    hotels.forEach(function (hotel) {
-      var id = (hotel.location.x * hotel.location.y * hotel.offer.price || 1).toString(16);
-      hotel.id = id;
+  function getHotelsDictionary(response) {
+    response.forEach(function (hotel) {
+      hotel.id = (hotel.location.x * hotel.location.y + hotel.offer.price).toString(16);
+      hotels[hotel.id] = hotel;
     });
   }
 
@@ -86,36 +85,28 @@
   function pinClickHandler(event) {
     var pinId = getPinId(event.target);
     var currentCard = mapSection.querySelector('.map__card.popup');
-    if (!currentCard) {
-      renderPinAssociatedCard(pinId);
-    } else if (currentCard.dataset.id === pinId) {
+    if (currentCard && currentCard.dataset.id === pinId) {
       return;
-    } else {
-      removeCurrentCard(currentCard);
-      renderPinAssociatedCard(pinId);
     }
+    if (currentCard && currentCard.dataset.id !== pinId) {
+      removeCurrentCard(currentCard);
+    }
+    renderHotelCard(hotels[pinId]);
   }
 
   function pinKeyEnterHandler(event) {
-    if (event.key !== 'Enter') {
-      return;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      var pinId = getPinId(event.target);
+      var currentCard = mapSection.querySelector('.map__card.popup');
+      if (currentCard && currentCard.dataset.id === pinId) {
+        return;
+      }
+      if (currentCard && currentCard.dataset.id !== pinId) {
+        removeCurrentCard(currentCard);
+      }
+      renderHotelCard(hotels[pinId]);
     }
-    event.preventDefault();
-    var pinId = getPinId(event.target);
-    var currentCard = mapSection.querySelector('.map__card.popup');
-    if (!currentCard) {
-      renderPinAssociatedCard(pinId);
-    } else if (currentCard.dataset.id === pinId) {
-      return;
-    } else {
-      removeCurrentCard(currentCard);
-      renderPinAssociatedCard(pinId);
-    }
-  }
-
-  function renderPinAssociatedCard(id) {
-    var findedHotel = findHotelById(id);
-    renderHotelCard(findedHotel);
   }
 
   function removeCurrentCard(card) {
@@ -126,68 +117,6 @@
 
   function getPinId(target) {
     return target.matches('img') ? target.parentNode.dataset.id : target.dataset.id;
-  }
-
-  function findHotelById(id) {
-    for (var i = 0; i < hotels.length - 1; i++) {
-      if (hotels[i].id === id) {
-        break;
-      }
-    }
-    return hotels[i];
-  }
-
-  // #####################################
-  // ######     MODULE5-TASK3       ######
-  // #####################################
-
-  var mainPinMoveArea = window.keksobookingMap.mainPinMoveArea;
-
-  mainPin.addEventListener('mousedown', function () {
-    mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
-    mainPin.addEventListener('mouseup', mainPinMouseupHandler);
-    mainPin.addEventListener('mouseleave', mainPinMouseleaveHandler);
-  });
-
-  function mainPinMousemoveHandler(event) {
-    var stopPosition = {
-      x: mainPin.offsetLeft + event.movementX,
-      y: mainPin.offsetTop + event.movementY
-    };
-
-    if (stopPosition.x > mainPinMoveArea.getXMax()) {
-      stopPosition.x = mainPinMoveArea.getXMax();
-    } else if (stopPosition.x < mainPinMoveArea.X_MIN) {
-      stopPosition.x = mainPinMoveArea.X_MIN;
-    }
-
-    if (stopPosition.y > mainPinMoveArea.Y_MAX) {
-      stopPosition.y = mainPinMoveArea.Y_MAX;
-    } else if (stopPosition.y < mainPinMoveArea.Y_MIN) {
-      stopPosition.y = mainPinMoveArea.Y_MIN;
-    }
-
-    mainPin.style.left = stopPosition.x + 'px';
-    mainPin.style.top = stopPosition.y + 'px';
-    setMainPinAddressInputValue();
-  }
-
-  function mainPinMouseupHandler() {
-    setMainPinAddressInputValue();
-    mainPin.removeEventListener('mousemove', mainPinMousemoveHandler);
-    mainPin.removeEventListener('mouseup', mainPinMouseupHandler);
-    mainPin.removeEventListener('mouseleave', mainPinMouseleaveHandler);
-  }
-
-  function mainPinMouseleaveHandler() {
-    mainPin.removeEventListener('mousemove', mainPinMousemoveHandler);
-    mainPin.removeEventListener('mouseup', mainPinMouseupHandler);
-    mainPin.removeEventListener('mouseleave', mainPinMouseleaveHandler);
-  }
-
-  function setMainPinAddressInputValue() {
-    var pinArrowCoordinates = window.keksobookingMap.getMainPinArrowCoordinates();
-    window.guestNoticeForm.addressInput.value = 'x: ' + pinArrowCoordinates.x + ', y: ' + pinArrowCoordinates.y;
   }
 
   disableKeksobooking();
