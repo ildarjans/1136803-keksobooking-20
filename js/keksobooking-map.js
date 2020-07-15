@@ -7,8 +7,8 @@
   };
 
   var mapSection = document.querySelector('section.map');
+  var pinsContainer = document.querySelector('.map__pins');
   var mainPin = mapSection.querySelector('.map__pin--main');
-  var pinContainer = mapSection.querySelector('.map__pins');
   mainPin.style.zIndex = 100;
 
   var mainPinMoveArea = {
@@ -97,11 +97,10 @@
     window.guestNoticeForm.addressInput.value = 'x: ' + pinArrowCoordinates.x + ', y: ' + pinArrowCoordinates.y;
   }
 
-
   window.keksobookingMap = {
     mainPin: mainPin,
     mapSection: mapSection,
-    pinContainer: pinContainer,
+    pinsContainer: pinsContainer,
     activateMap: activateMap,
     deactivateMap: deactivateMap,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,

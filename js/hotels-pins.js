@@ -7,6 +7,8 @@
   };
 
   var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
+  var mapPins = window.keksobookingMap.mapPins;
+  var pinsContainer = window.keksobookingMap.pinsContainer;
 
   function renderHotelsPins(hotelsObj) {
     var hotelsId = Object.keys(hotelsObj);
@@ -15,7 +17,7 @@
       var id = hotelsId[i];
       renderPinTemplate(fragment, pinTemplateContent, hotelsObj[id]);
     }
-    window.keksobookingMap.pinContainer.append(fragment);
+    pinsContainer.append(fragment);
   }
 
   function renderPinTemplate(parent, pinTemplate, hotel) {
@@ -28,8 +30,40 @@
     parent.append(pin);
   }
 
+  function activatePins(clickHandler, keyEnterHandler) {
+    mapPins = mapPins || Array.from(pinsContainer.querySelectorAll('[class=map__pin]'));
+    mapPins.forEach(function (pin) {
+      pin.addEventListener('click', clickHandler);
+      pin.addEventListener('keydown', keyEnterHandler);
+    });
+  }
+
+  function deactivatePins(clickHandler, keyEnterHandler) {
+    if (mapPins) {
+      mapPins.forEach(function (pin) {
+        pin.removeEventListener('click', clickHandler);
+        pin.removeEventListener('keydown', keyEnterHandler);
+      });
+    }
+  }
+
+  function getPinId(target) {
+    return target.matches('img') ? target.parentNode.dataset.id : target.dataset.id;
+  }
+
+  function removeRenderedPins() {
+    var pins = pinsContainer.querySelectorAll('[class=map__pin]');
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
+  }
+
   window.hotelsPins = {
-    renderPins: renderHotelsPins
+    activatePins: activatePins,
+    deactivatePins: deactivatePins,
+    renderPins: renderHotelsPins,
+    removeRenderedPins: removeRenderedPins,
+    getPinId: getPinId
   };
 
 })();

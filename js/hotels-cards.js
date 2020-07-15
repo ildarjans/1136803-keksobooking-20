@@ -89,9 +89,28 @@
     closePopup.removeEventListener('keydown', closePopupEscapeHandler);
   }
 
+  function removeCurrentCard(card) {
+    card = card || mapSection.querySelector('.map__card.popup');
+    if (card) {
+      var cardCloseButton = card.querySelector('.popup__close');
+      removeClosePopupListeners(cardCloseButton);
+      card.remove();
+    }
+  }
+
+  function getHotelsDictionary(response) {
+    var hotels = {};
+    response.forEach(function (hotel) {
+      hotel.id = (hotel.location.x * hotel.location.y + hotel.offer.price).toString(16);
+      hotels[hotel.id] = hotel;
+    });
+    return hotels;
+  }
+
   window.hotelsCards = {
     renderCard: renderHotelCard,
-    removeClosePopupListeners: removeClosePopupListeners
+    removeCurrentCard: removeCurrentCard,
+    getHotelsDictionary: getHotelsDictionary
   };
 
 })();
