@@ -9,13 +9,13 @@
   var deactivateForm = window.guestNoticeForm.deactivateForm;
   var deactivateMap = window.keksobookingMap.deactivateMap;
   var deactivatePins = window.hotelsPins.deactivatePins;
-  var getHotelsDictionary = window.hotelsCards.getHotelsDictionary;
+  var convertHotelsResponse = window.hotelsCards.convertHotelsResponse;
   var getPinId = window.hotelsPins.getPinId;
   var mapSection = window.keksobookingMap.mapSection;
   var mainPin = window.keksobookingMap.mainPin;
   var renderHotelsPins = window.hotelsPins.renderPins;
   var renderHotelCard = window.hotelsCards.renderCard;
-  var removeCurrentCard = window.hotelsCards.removeCurrentCard;
+  var removeCard = window.hotelsCards.removeCard;
 
   var hotels;
 
@@ -48,7 +48,7 @@
   }
 
   function successCallback(response) {
-    hotels = getHotelsDictionary(response);
+    hotels = convertHotelsResponse(response);
     renderHotelsPins(hotels);
     activatePins(pinClickHandler, pinKeyEnterHandler);
   }
@@ -64,7 +64,7 @@
       return;
     }
     if (currentCard && currentCard.dataset.id !== pinId) {
-      removeCurrentCard(currentCard);
+      removeCard(currentCard);
     }
     renderHotelCard(hotels[pinId]);
   }
@@ -78,7 +78,7 @@
         return;
       }
       if (currentCard && currentCard.dataset.id !== pinId) {
-        removeCurrentCard(currentCard);
+        removeCard(currentCard);
       }
       renderHotelCard(hotels[pinId]);
     }

@@ -6,20 +6,37 @@
   var MIN_PRICE_MESSAGE = 'Для выбранного типа жилья цена не может быть ниже ';
   var INVALID_COLOR = '#a82929';
   var VALID_COLOR = '#000000';
+  var minPrices = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000
+  };
 
   var getMainPinArrowCoordinates = window.keksobookingMap.getMainPinArrowCoordinates;
   var getMainPinCenterCoordinates = window.keksobookingMap.getMainPinCenterCoordinates;
+  var filtersForm = window.keksobookingMap.mapSection.querySelector('.map__filters');
 
   var guestNoticeForm = document.querySelector('.notice form.ad-form');
   var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
   var addressInput = guestNoticeForm.querySelector('#address');
-  var filtersForm = window.keksobookingMap.mapSection.querySelector('.map__filters');
   var roomsQuantity = guestNoticeForm.querySelector('#room_number');
   var roomsCapacity = guestNoticeForm.querySelector('#capacity');
   var accomodationType = guestNoticeForm.querySelector('#type');
   var accomodationPrice = guestNoticeForm.querySelector('#price');
   var checkinTime = guestNoticeForm.querySelector('#timein');
   var checkoutTime = guestNoticeForm.querySelector('#timeout');
+
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var successPopup;
+  var errorPopup;
+
+  guestNoticeForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var formData = new FormData(guestNoticeForm);
+    window.ajax.upload(FORM_UPLOAD_URL, successCallback, errorCallback, formData);
+  });
 
   function disableFormFields() {
     formFields.forEach(function (field) {
@@ -88,13 +105,6 @@
     disableFormFields();
   }
 
-  var minPrices = {
-    'bungalo': 0,
-    'flat': 1000,
-    'house': 5000,
-    'palace': 10000
-  };
-
   function syncronizeCheckoutTime() {
     checkinTime.value = checkoutTime.value;
   }
@@ -138,23 +148,6 @@
     validateRooms();
   }
 
-  // ###################################
-  // ######     MODULE6-TASK3     ######
-  // ###################################
-
-  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-  var successTemplate = document.querySelector('#success').content.querySelector('.success');
-  var successPopup;
-  var errorPopup;
-  renderSuccessPopup(successTemplate);
-  renderErrorPopup(errorTemplate);
-
-  guestNoticeForm.addEventListener('submit', function (event) {
-    event.preventDefault();
-    var formData = new FormData(guestNoticeForm);
-    window.ajax.upload(FORM_UPLOAD_URL, successCallback, errorCallback, formData);
-  });
-
   function successCallback() {
     showPopup(successPopup);
     window.addEventListener('click', successClickHandler);
@@ -193,9 +186,6 @@
     element.style.display = 'none';
   }
 
-  // EVENT HANDLERS
-  // -------------------------------------------------
-
   function successClickHandler() {
     hidePopup(successPopup);
     removeSuccessListeners(successPopup);
@@ -220,8 +210,6 @@
     }
   }
 
-  // REMOVE LISTENERS
-  // -------------------------------------------------
   function removeSuccessListeners() {
     window.removeEventListener('click', successClickHandler);
     window.removeEventListener('keydown', successEscapeHandler);
@@ -232,6 +220,8 @@
     window.removeEventListener('keydown', errorEscapeHandler);
   }
 
+  renderSuccessPopup(successTemplate);
+  renderErrorPopup(errorTemplate);
 
   window.guestNoticeForm = {
     activateForm: activateForm,
