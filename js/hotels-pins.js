@@ -13,10 +13,9 @@
   function renderHotelsPins(hotelsObj) {
     var hotelsId = Object.keys(hotelsObj);
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < hotelsId.length; i++) {
-      var id = hotelsId[i];
+    hotelsId.forEach(function (id) {
       renderPinTemplate(fragment, pinTemplateContent, hotelsObj[id]);
-    }
+    });
     pinsContainer.append(fragment);
   }
 

@@ -9,14 +9,21 @@
   var mapSection = document.querySelector('section.map');
   var pinsContainer = document.querySelector('.map__pins');
   var mainPin = mapSection.querySelector('.map__pin--main');
-  mainPin.style.zIndex = 100;
-
   var mainPinMoveArea = {
     Y_MIN: 46,
     Y_MAX: 546,
     X_MIN: mainPinOffset.x * (-1),
     X_MAX: mapSection.offsetWidth - mainPinOffset.x
   };
+
+  mainPin.style.zIndex = 100;
+  window.addEventListener('resize', mainPinMoveAreaHandle);
+
+  mainPin.addEventListener('mousedown', function () {
+    mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
+    mainPin.addEventListener('mouseup', mainPinMouseupHandler);
+    mainPin.addEventListener('mouseleave', mainPinMouseleaveHandler);
+  });
 
   function getMainPinArrowCoordinates() {
     return {
@@ -39,18 +46,6 @@
   function deactivateMap() {
     mapSection.classList.add('map--faded');
   }
-
-  // #####################################
-  // ######     MODULE5-TASK3       ######
-  // #####################################
-
-  window.addEventListener('resize', mainPinMoveAreaHandle);
-
-  mainPin.addEventListener('mousedown', function () {
-    mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
-    mainPin.addEventListener('mouseup', mainPinMouseupHandler);
-    mainPin.addEventListener('mouseleave', mainPinMouseleaveHandler);
-  });
 
   function mainPinMoveAreaHandle() {
     mainPinMoveArea.X_MAX = mapSection.offsetWidth - mainPinOffset.x;
