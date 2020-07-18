@@ -9,6 +9,7 @@
   var mapSection = document.querySelector('section.map');
   var pinsContainer = document.querySelector('.map__pins');
   var mainPin = mapSection.querySelector('.map__pin--main');
+
   var mainPinMoveArea = {
     Y_MIN: 46,
     Y_MAX: 546,
@@ -16,7 +17,7 @@
     X_MAX: mapSection.offsetWidth - mainPinOffset.x
   };
 
-  mainPin.style.zIndex = 100;
+  mainPin.style.zIndex = 2;
   window.addEventListener('resize', mainPinMoveAreaHandle);
 
   mainPin.addEventListener('mousedown', function () {
@@ -46,6 +47,23 @@
   function deactivateMap() {
     mapSection.classList.add('map--faded');
   }
+  // ####################################
+  // #####      MODULE7-TASK2       #####
+  // ####################################
+  var mapFilters = mapSection.querySelector('.map__filters');
+
+  function activateFilters() {
+    mapFilters.classList.remove('ad-form--disabled');
+  }
+
+  function deactivateFilters() {
+    mapFilters.classList.add('ad-form--disabled');
+  }
+
+  // ####################################
+  // ######       END MODULE7      ######
+  // ####################################
+
 
   function mainPinMoveAreaHandle() {
     mainPinMoveArea.X_MAX = mapSection.offsetWidth - mainPinOffset.x;
@@ -96,8 +114,11 @@
     mainPin: mainPin,
     mapSection: mapSection,
     pinsContainer: pinsContainer,
+    mapFilters: mapFilters,
     activateMap: activateMap,
     deactivateMap: deactivateMap,
+    activateFilters: activateFilters,
+    deactivateFilters: deactivateFilters,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
     getMainPinArrowCoordinates: getMainPinArrowCoordinates,
   };
