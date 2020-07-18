@@ -3,6 +3,7 @@
 (function () {
   var HOTELS_LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
   var MAX_PINS_DISPLAY = 5;
+  var DEBOUNCE_DELAY = 1000;
 
   var activateMap = window.keksobookingMap.activateMap;
   var activateFilters = window.keksobookingMap.activateFilters;
@@ -11,6 +12,7 @@
   var deactivateFilters = window.keksobookingMap.deactivateFilters;
   var deactivateForm = window.guestNoticeForm.deactivateForm;
   var deactivateMap = window.keksobookingMap.deactivateMap;
+  var debounceFilters = window.utilities.debounce(applyPinsFilters, DEBOUNCE_DELAY);
   var convertHotelsResponse = window.hotelsCards.convertHotelsResponse;
   var getPinId = window.hotelsPins.getPinId;
   var mapSection = window.keksobookingMap.mapSection;
@@ -121,12 +123,17 @@
   var mapFilters = window.keksobookingMap.mapFilters;
 
   mapFilters.addEventListener('change', function () {
+    debounceFilters();
+  });
+
+
+  function applyPinsFilters() {
     var filteredIds = getFilteredHotelsIds(mapFilters).slice(0, MAX_PINS_DISPLAY);
     removeRenderedPins(pinClickHandler, pinKeyEnterHandler);
     removeCurrentCard();
     renderHotelsPins(filteredIds, hotels);
     activatePins(pinClickHandler, pinKeyEnterHandler);
-  });
+  }
 
   function getFilteredHotelsIds(form) {
     var formData = getFormObject(form);
