@@ -16,7 +16,6 @@
   var getMainPinArrowCoordinates = window.keksobookingMap.getMainPinArrowCoordinates;
   var getMainPinCenterCoordinates = window.keksobookingMap.getMainPinCenterCoordinates;
   var filtersForm = window.keksobookingMap.mapSection.querySelector('.map__filters');
-
   var guestNoticeForm = document.querySelector('.notice form.ad-form');
   var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
   var addressInput = guestNoticeForm.querySelector('#address');
@@ -149,11 +148,13 @@
   }
 
   function successCallback() {
+    var pinClickHandler = window.main.pinClickHandler;
+    var pinKeyEnterHandler = window.main.pinKeyEnterHandler;
     showPopup(successPopup);
     window.addEventListener('click', successClickHandler);
     window.addEventListener('keydown', successEscapeHandler);
     window.main.disableKeksobooking();
-    window.hotelsPins.removeRenderedPins();
+    window.hotelsPins.removeRenderedPins(pinClickHandler, pinKeyEnterHandler);
     window.hotelsCards.removeCurrentCard();
     guestNoticeForm.reset();
   }
@@ -222,6 +223,7 @@
 
   renderSuccessPopup(successTemplate);
   renderErrorPopup(errorTemplate);
+
 
   window.guestNoticeForm = {
     activateForm: activateForm,
