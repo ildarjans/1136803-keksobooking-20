@@ -95,9 +95,7 @@
   function removeCurrentCard() {
     var card = mapSection.querySelector('.map__card.popup');
     if (card) {
-      var cardCloseButton = card.querySelector('.popup__close');
-      removeClosePopupListeners(cardCloseButton);
-      card.remove();
+      removeCard(card);
     }
   }
 
