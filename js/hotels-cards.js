@@ -63,9 +63,6 @@
     return type;
   }
 
-  // #####################################
-  // ######     MODULE4-TASK3       ######
-  // #####################################
   function setPopupCloseButton(closePopup) {
     closePopup.tabIndex = 0;
     closePopup.addEventListener('click', closePopupClickHandler);
@@ -89,18 +86,22 @@
     closePopup.removeEventListener('keydown', closePopupEscapeHandler);
   }
 
-  function removeCurrentCard(card) {
-    card = card || mapSection.querySelector('.map__card.popup');
+  function removeCard(card) {
+    var cardCloseButton = card.querySelector('.popup__close');
+    removeClosePopupListeners(cardCloseButton);
+    card.remove();
+  }
+
+  function removeCurrentCard() {
+    var card = mapSection.querySelector('.map__card.popup');
     if (card) {
-      var cardCloseButton = card.querySelector('.popup__close');
-      removeClosePopupListeners(cardCloseButton);
-      card.remove();
+      removeCard(card);
     }
   }
 
-  function getHotelsDictionary(response) {
+  function convertHotelsResponse(hotelsArray) {
     var hotels = {};
-    response.forEach(function (hotel) {
+    hotelsArray.forEach(function (hotel) {
       hotel.id = (hotel.location.x * hotel.location.y + hotel.offer.price).toString(16);
       hotels[hotel.id] = hotel;
     });
@@ -108,9 +109,10 @@
   }
 
   window.hotelsCards = {
+    convertHotelsResponse: convertHotelsResponse,
     renderCard: renderHotelCard,
     removeCurrentCard: removeCurrentCard,
-    getHotelsDictionary: getHotelsDictionary
+    removeCard: removeCard,
   };
 
 })();

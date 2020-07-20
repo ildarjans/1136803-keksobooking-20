@@ -20,9 +20,19 @@
     return randomNames;
   }
 
+  function debounce(fn, delay) {
+    var timeout;
+    return function () {
+      clearTimeout(timeout);
+      timeout = setTimeout(fn, delay);
+    };
+  }
+
+
   window.utilities = {
     getRandomInteger: getRandomInteger,
-    getShuffledArray: getShuffledArray
+    getShuffledArray: getShuffledArray,
+    debounce: debounce,
   };
 
 })();

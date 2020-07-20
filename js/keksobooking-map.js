@@ -9,7 +9,6 @@
   var mapSection = document.querySelector('section.map');
   var pinsContainer = document.querySelector('.map__pins');
   var mainPin = mapSection.querySelector('.map__pin--main');
-  mainPin.style.zIndex = 100;
 
   var mainPinMoveArea = {
     Y_MIN: 46,
@@ -17,6 +16,15 @@
     X_MIN: mainPinOffset.x * (-1),
     X_MAX: mapSection.offsetWidth - mainPinOffset.x
   };
+
+  mainPin.style.zIndex = 2;
+  window.addEventListener('resize', mainPinMoveAreaHandle);
+
+  mainPin.addEventListener('mousedown', function () {
+    mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
+    mainPin.addEventListener('mouseup', mainPinMouseupHandler);
+    mainPin.addEventListener('mouseleave', mainPinMouseleaveHandler);
+  });
 
   function getMainPinArrowCoordinates() {
     return {
@@ -39,18 +47,23 @@
   function deactivateMap() {
     mapSection.classList.add('map--faded');
   }
+  // ####################################
+  // #####      MODULE7-TASK2       #####
+  // ####################################
+  var mapFilters = mapSection.querySelector('.map__filters');
 
-  // #####################################
-  // ######     MODULE5-TASK3       ######
-  // #####################################
+  function activateFilters() {
+    mapFilters.classList.remove('ad-form--disabled');
+  }
 
-  window.addEventListener('resize', mainPinMoveAreaHandle);
+  function deactivateFilters() {
+    mapFilters.classList.add('ad-form--disabled');
+  }
 
-  mainPin.addEventListener('mousedown', function () {
-    mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
-    mainPin.addEventListener('mouseup', mainPinMouseupHandler);
-    mainPin.addEventListener('mouseleave', mainPinMouseleaveHandler);
-  });
+  // ####################################
+  // ######       END MODULE7      ######
+  // ####################################
+
 
   function mainPinMoveAreaHandle() {
     mainPinMoveArea.X_MAX = mapSection.offsetWidth - mainPinOffset.x;
@@ -101,8 +114,11 @@
     mainPin: mainPin,
     mapSection: mapSection,
     pinsContainer: pinsContainer,
+    mapFilters: mapFilters,
     activateMap: activateMap,
     deactivateMap: deactivateMap,
+    activateFilters: activateFilters,
+    deactivateFilters: deactivateFilters,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
     getMainPinArrowCoordinates: getMainPinArrowCoordinates,
   };

@@ -2,29 +2,33 @@
 
 (function () {
   var HOTELS_LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
+  var MAX_PINS_DISPLAY = 5;
+  var DEBOUNCE_DELAY = 1000;
 
-  var activateForm = window.guestNoticeForm.activateForm;
   var activateMap = window.keksobookingMap.activateMap;
+  var activateFilters = window.keksobookingMap.activateFilters;
+  var activateForm = window.guestNoticeForm.activateForm;
   var activatePins = window.hotelsPins.activatePins;
+  var applyFormFilters = window.filterForm.applyPinsFilters;
+  var deactivateFilters = window.keksobookingMap.deactivateFilters;
   var deactivateForm = window.guestNoticeForm.deactivateForm;
   var deactivateMap = window.keksobookingMap.deactivateMap;
-  var deactivatePins = window.hotelsPins.deactivatePins;
-  var getHotelsDictionary = window.hotelsCards.getHotelsDictionary;
-  var getPinId = window.hotelsPins.getPinId;
-  var mapSection = window.keksobookingMap.mapSection;
+  var convertHotelsResponse = window.hotelsCards.convertHotelsResponse;
   var mainPin = window.keksobookingMap.mainPin;
   var renderHotelsPins = window.hotelsPins.renderPins;
   var renderHotelCard = window.hotelsCards.renderCard;
-  var removeCurrentCard = window.hotelsCards.removeCurrentCard;
+  var removeRenderedPins = window.hotelsPins.removeRenderedPins;
 
+  var debouncedFilters;
   var hotels;
 
   function disableKeksobooking() {
     mainPin.addEventListener('mousedown', mainPinMousedownHandler);
     mainPin.addEventListener('keydown', mainPinKeydownHandler);
-    deactivateForm();
     deactivateMap();
-    deactivatePins(pinClickHandler, pinKeyEnterHandler);
+    removeRenderedPins();
+    deactivateFilters();
+    deactivateForm();
   }
 
   function enableKeksobooking() {
@@ -32,6 +36,7 @@
     mainPin.removeEventListener('keydown', mainPinKeydownHandler);
     window.ajax.load(HOTELS_LOAD_URL, successCallback, errorCallback);
     activateMap();
+    activateFilters();
     activateForm();
   }
 
@@ -48,46 +53,38 @@
   }
 
   function successCallback(response) {
-    hotels = getHotelsDictionary(response);
-    renderHotelsPins(hotels);
-    activatePins(pinClickHandler, pinKeyEnterHandler);
+    hotels = convertHotelsResponse(response);
+    var ids = Object.keys(hotels).slice(0, MAX_PINS_DISPLAY);
+    renderHotelsPins(ids, hotels);
+    activatePins();
+    applyFormFilters = applyFormFilters.bind(null, hotels, MAX_PINS_DISPLAY);
+    debouncedFilters = window.utilities.debounce(applyFormFilters, DEBOUNCE_DELAY);
   }
 
   function errorCallback(message) {
     window.popupMessage.show(message);
   }
 
-  function pinClickHandler(event) {
-    var pinId = getPinId(event.target);
-    var currentCard = mapSection.querySelector('.map__card.popup');
-    if (currentCard && currentCard.dataset.id === pinId) {
-      return;
-    }
-    if (currentCard && currentCard.dataset.id !== pinId) {
-      removeCurrentCard(currentCard);
-    }
-    renderHotelCard(hotels[pinId]);
+  function renderPinById(id) {
+    renderHotelCard(hotels[id]);
   }
 
-  function pinKeyEnterHandler(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      var pinId = getPinId(event.target);
-      var currentCard = mapSection.querySelector('.map__card.popup');
-      if (currentCard && currentCard.dataset.id === pinId) {
-        return;
-      }
-      if (currentCard && currentCard.dataset.id !== pinId) {
-        removeCurrentCard(currentCard);
-      }
-      renderHotelCard(hotels[pinId]);
-    }
-  }
+  // ####################################
+  // #####      MODULE7-TASK2       #####
+  // #####            &&            #####
+  // #####      MODULE7-TASK3       #####
+  // ####################################
+
+  var mapFilters = window.keksobookingMap.mapFilters;
+  mapFilters.addEventListener('change', function () {
+    debouncedFilters();
+  });
 
   disableKeksobooking();
 
   window.main = {
-    disableKeksobooking: disableKeksobooking
+    disableKeksobooking: disableKeksobooking,
+    renderPinById: renderPinById,
   };
 
 })();
