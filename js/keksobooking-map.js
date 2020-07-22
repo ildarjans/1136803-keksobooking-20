@@ -42,14 +42,16 @@
 
   function activateMap() {
     mapSection.classList.remove('map--faded');
+    pinsContainer.addEventListener('focus', pinsFocusHandler, true);
+    pinsContainer.addEventListener('blur', pinsBlurHandler, true);
   }
 
   function deactivateMap() {
     mapSection.classList.add('map--faded');
+    pinsContainer.removeEventListener('focus', pinsFocusHandler, true);
+    pinsContainer.removeEventListener('blur', pinsBlurHandler, true);
   }
-  // ####################################
-  // #####      MODULE7-TASK2       #####
-  // ####################################
+
   var mapFilters = mapSection.querySelector('.map__filters');
 
   function activateFilters() {
@@ -60,19 +62,14 @@
     mapFilters.classList.add('ad-form--disabled');
   }
 
-  // ####################################
-  // ######       END MODULE7      ######
-  // ####################################
-
-
   function mainPinMoveAreaHandle() {
     mainPinMoveArea.X_MAX = mapSection.offsetWidth - mainPinOffset.x;
   }
 
-  function mainPinMousemoveHandler(event) {
+  function mainPinMousemoveHandler(evt) {
     var position = {
-      x: mainPin.offsetLeft + event.movementX,
-      y: mainPin.offsetTop + event.movementY
+      x: mainPin.offsetLeft + evt.movementX,
+      y: mainPin.offsetTop + evt.movementY
     };
 
     if (position.x > mainPinMoveArea.X_MAX) {
@@ -110,17 +107,32 @@
     window.guestNoticeForm.addressInput.value = 'x: ' + pinArrowCoordinates.x + ', y: ' + pinArrowCoordinates.y;
   }
 
+  function pinsFocusHandler(evt) {
+    evt.target.classList.add('map__pin-active');
+  }
+
+  function pinsBlurHandler() {
+    removePinActiveClass();
+  }
+
+  function removePinActiveClass() {
+    var activePin = pinsContainer.querySelector('.map__pin-active');
+    if (activePin) {
+      activePin.classList.remove('map__pin-active');
+    }
+  }
+
   window.keksobookingMap = {
-    mainPin: mainPin,
-    mapSection: mapSection,
-    pinsContainer: pinsContainer,
-    mapFilters: mapFilters,
     activateMap: activateMap,
-    deactivateMap: deactivateMap,
     activateFilters: activateFilters,
+    deactivateMap: deactivateMap,
     deactivateFilters: deactivateFilters,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
     getMainPinArrowCoordinates: getMainPinArrowCoordinates,
+    mapFilters: mapFilters,
+    mainPin: mainPin,
+    mapSection: mapSection,
+    pinsContainer: pinsContainer,
   };
 
 

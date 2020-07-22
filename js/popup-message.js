@@ -47,8 +47,8 @@
     hidePopup();
   }
 
-  function clickWindowHandler(event) {
-    if (event.target !== container) {
+  function clickWindowHandler(evt) {
+    if (evt.target !== container) {
       hidePopup();
     }
   }

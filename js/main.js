@@ -3,7 +3,7 @@
 (function () {
   var HOTELS_LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
   var MAX_PINS_DISPLAY = 5;
-  var DEBOUNCE_DELAY = 1000;
+  var DEBOUNCE_DELAY = 500;
 
   var activateMap = window.keksobookingMap.activateMap;
   var activateFilters = window.keksobookingMap.activateFilters;
@@ -65,15 +65,9 @@
     window.popupMessage.show(message);
   }
 
-  function renderPinById(id) {
+  function renderCardById(id) {
     renderHotelCard(hotels[id]);
   }
-
-  // ####################################
-  // #####      MODULE7-TASK2       #####
-  // #####            &&            #####
-  // #####      MODULE7-TASK3       #####
-  // ####################################
 
   var mapFilters = window.keksobookingMap.mapFilters;
   mapFilters.addEventListener('change', function () {
@@ -84,7 +78,7 @@
 
   window.main = {
     disableKeksobooking: disableKeksobooking,
-    renderPinById: renderPinById,
+    renderCardById: renderCardById,
   };
 
 })();

@@ -31,8 +31,8 @@
   var successPopup;
   var errorPopup;
 
-  guestNoticeForm.addEventListener('submit', function (event) {
-    event.preventDefault();
+  guestNoticeForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
     var formData = new FormData(guestNoticeForm);
     window.ajax.upload(FORM_UPLOAD_URL, successCallback, errorCallback, formData);
   });
@@ -79,13 +79,13 @@
     var pinCoordinates = getMainPinArrowCoordinates();
     guestNoticeForm.classList.remove('ad-form--disabled');
     filtersForm.classList.remove('ad-form--disabled');
-    roomsQuantity.addEventListener('change', changeRoomsQuantity);
-    roomsCapacity.addEventListener('change', changeRoomsCapacity);
-    addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
     accomodationType.addEventListener('change', changeAccomodationType);
     accomodationPrice.addEventListener('change', changeAccomodationPrice);
     checkinTime.addEventListener('change', syncronizeCheckinTime);
     checkoutTime.addEventListener('change', syncronizeCheckoutTime);
+    roomsQuantity.addEventListener('change', changeRoomsQuantity);
+    roomsCapacity.addEventListener('change', changeRoomsCapacity);
+    addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
     validateRooms();
     enableFormFields();
   }
@@ -94,13 +94,13 @@
     var pinCoordinates = getMainPinCenterCoordinates();
     guestNoticeForm.classList.add('ad-form--disabled');
     filtersForm.classList.add('ad-form--disabled');
-    roomsQuantity.removeEventListener('change', changeRoomsQuantity);
-    roomsCapacity.removeEventListener('change', changeRoomsCapacity);
-    addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
     accomodationType.removeEventListener('change', changeAccomodationType);
     accomodationPrice.removeEventListener('change', changeAccomodationPrice);
     checkinTime.removeEventListener('change', syncronizeCheckinTime);
     checkoutTime.removeEventListener('change', syncronizeCheckoutTime);
+    roomsQuantity.removeEventListener('change', changeRoomsQuantity);
+    roomsCapacity.removeEventListener('change', changeRoomsCapacity);
+    addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
     disableFormFields();
   }
 
@@ -192,8 +192,8 @@
     removeSuccessListeners(successPopup);
   }
 
-  function successEscapeHandler(event) {
-    if (event.key === 'Escape') {
+  function successEscapeHandler(evt) {
+    if (evt.key === 'Escape') {
       hidePopup(successPopup);
       removeSuccessListeners(successPopup);
     }
@@ -204,8 +204,8 @@
     removeErrorListeners();
   }
 
-  function errorEscapeHandler(event) {
-    if (event.key === 'Escape') {
+  function errorEscapeHandler(evt) {
+    if (evt.key === 'Escape') {
       hidePopup(errorPopup);
       removeErrorListeners();
     }
