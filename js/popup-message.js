@@ -2,7 +2,7 @@
 
 (function () {
   var HIDE_POPUP_DELAY = 5000;
-  var containerStyle = [
+  var containerStyles = [
     'align-items: center',
     'background-color: rgba(0, 0, 0, 0.75)',
     'border-radius: 5px',
@@ -21,7 +21,7 @@
     'width: 75%',
     'z-index: 100'
   ];
-  var closeButtonStyle = [
+  var closeButtonStyles = [
     'cursor: pointer',
     'font-size: 64px',
     'font-weight: 100',
@@ -35,8 +35,8 @@
   var paragraph = document.createElement('p');
 
   function renderPopup() {
-    container.style = containerStyle.join(';');
-    closeButton.style = closeButtonStyle.join(';');
+    container.style = containerStyles.join(';');
+    closeButton.style = closeButtonStyles.join(';');
     closeButton.innerHTML = '&times;';
     container.append(paragraph);
     container.append(closeButton);
