@@ -1,16 +1,16 @@
 'use strict';
 
 (function () {
-  var pinOffset = {
-    x: -25,
-    y: -70
+  var PinOffset = {
+    X: -25,
+    Y: -70
   };
 
   var pinTemplateContent = document.querySelector('template#pin').content.querySelector('.map__pin');
   var mapSection = window.keksobookingMap.mapSection;
   var pinsContainer = window.keksobookingMap.pinsContainer;
   var removeCard = window.hotelsCards.removeCard;
-  var mapPins;
+  var mapPins = [];
 
   function renderHotelsPins(ids, hotelsObj) {
     var fragment = document.createDocumentFragment();
@@ -24,18 +24,17 @@
     var pin = pinTemplate.cloneNode(true);
     pin.children[0].src = hotel.author.avatar;
     pin.children[0].alt = hotel.offer.title;
-    pin.style.left = hotel.location.x + pinOffset.x + 'px';
-    pin.style.top = hotel.location.y + pinOffset.y + 'px';
+    pin.style.left = hotel.location.x + PinOffset.X + 'px';
+    pin.style.top = hotel.location.y + PinOffset.Y + 'px';
     pin.dataset.id = hotel.id;
+    mapPins.push(pin);
+    activatePin(pin);
     parent.append(pin);
   }
 
-  function activatePins() {
-    mapPins = pinsContainer.querySelectorAll('[class=map__pin]');
-    mapPins.forEach(function (pin) {
-      pin.addEventListener('click', pinClickHandler);
-      pin.addEventListener('keydown', pinKeyEnterHandler);
-    });
+  function activatePin(pin) {
+    pin.addEventListener('click', pinClickHandler);
+    pin.addEventListener('keydown', pinKeyEnterHandler);
   }
 
   function removeRenderedPins() {
@@ -45,6 +44,7 @@
         pin.removeEventListener('keydown', pinKeyEnterHandler);
         pin.remove();
       });
+      mapPins = [];
     }
   }
 
@@ -80,7 +80,6 @@
   }
 
   window.hotelsPins = {
-    activatePins: activatePins,
     renderPins: renderHotelsPins,
     removeRenderedPins: removeRenderedPins,
   };
