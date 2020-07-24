@@ -37,6 +37,10 @@
     window.ajax.upload(FORM_UPLOAD_URL, successCallback, errorCallback, formData);
   });
 
+  guestNoticeForm.addEventListener('reset', function () {
+    window.main.disableKeksobooking();
+  });
+
   function disableFormFields() {
     formFields.forEach(function (field) {
       field.disabled = true;
@@ -85,9 +89,10 @@
     checkoutTime.addEventListener('change', syncronizeCheckoutTime);
     roomsQuantity.addEventListener('change', changeRoomsQuantity);
     roomsCapacity.addEventListener('change', changeRoomsCapacity);
-    addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
+    addressInput.value = pinCoordinates.x + ', ' + pinCoordinates.y;
     validateRooms();
     enableFormFields();
+    setMinPriceForAccomodationType();
   }
 
   function deactivateForm() {
@@ -100,7 +105,7 @@
     checkoutTime.removeEventListener('change', syncronizeCheckoutTime);
     roomsQuantity.removeEventListener('change', changeRoomsQuantity);
     roomsCapacity.removeEventListener('change', changeRoomsCapacity);
-    addressInput.value = 'x: ' + pinCoordinates.x + ', y: ' + pinCoordinates.y;
+    addressInput.value = pinCoordinates.x + ', ' + pinCoordinates.y;
     disableFormFields();
   }
 
@@ -225,7 +230,7 @@
   renderErrorPopup(errorTemplate);
 
 
-  window.guestNoticeForm = {
+  window.bookingForm = {
     activateForm: activateForm,
     deactivateForm: deactivateForm,
     addressInput: addressInput
