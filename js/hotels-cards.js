@@ -98,15 +98,15 @@
       hideElement(cardPhotos);
       return;
     }
-    var photo = cardPhotos.querySelector('.popup__photo');
-    photo.remove();
-    for (var i = 0; i < offerPhotos.length; i++) {
-      if (offerPhotos[i].match(imgRegex)) {
-        var newPhoto = photo.cloneNode();
-        newPhoto.src = offerPhotos[i];
+    var img = cardPhotos.querySelector('.popup__photo');
+    img.remove();
+    offerPhotos.forEach(function (photo) {
+      if (photo.match(imgRegex)) {
+        var newPhoto = img.cloneNode();
+        newPhoto.src = photo;
         cardPhotos.append(newPhoto);
       }
-    }
+    });
   }
 
   function hideElement(element) {
