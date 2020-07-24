@@ -1,14 +1,15 @@
 'use strict';
 
 (function () {
-  var errorMessages = {
-    statusError: function (xhr) {
-      return 'Код ошибки ' + xhr.status + ', ' + xhr.statusText +
-      '!\n\nПовторите попытку позже.';
-    },
-    unknownError: 'Произошла не предвиденная ошибка.\n\nПовторите попытку позже.',
-    timeoutExpired: 'Время ожидания запроса истекло.\n\nПовторите попытку позже.',
+  var ErrorMessages = {
+    UNKNOWN_ERROR: 'Произошла не предвиденная ошибка.\n\nПовторите попытку позже.',
+    TIMEOUT_EXPIRED: 'Время ожидания запроса истекло.\n\nПовторите попытку позже.'
   };
+
+  function getStatusErrorMessage(xhr) {
+    return 'Код ошибки ' + xhr.status + ', ' + xhr.statusText +
+    '!\n\nПовторите попытку позже.';
+  }
 
   function createXHR(url, successCallback, errorCallback) {
     var xhr = new XMLHttpRequest();
@@ -16,21 +17,7 @@
     xhr.open('GET', url);
     xhr.send();
 
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        successCallback(xhr.response);
-      } else {
-        errorCallback(errorMessages.statusError(xhr));
-      }
-    });
-
-    xhr.addEventListener('error', function () {
-      errorCallback(errorMessages.unknownError);
-    });
-
-    xhr.addEventListener('timeout', function () {
-      errorCallback(errorMessages.timeoutExpired);
-    });
+    addXHRListeners(xhr, successCallback, errorCallback);
   }
 
   function uploadXHR(url, successCallback, errorCallback, formData) {
@@ -38,20 +25,24 @@
     xhr.open('POST', url);
     xhr.send(formData);
 
+    addXHRListeners(xhr, successCallback, errorCallback);
+  }
+
+  function addXHRListeners(xhr, successCallback, errorCallback) {
     xhr.addEventListener('load', function () {
       if (xhr.status === 200) {
         successCallback(xhr.response);
       } else {
-        errorCallback(errorMessages.statusError(xhr));
+        errorCallback(getStatusErrorMessage(xhr));
       }
     });
 
     xhr.addEventListener('error', function () {
-      errorCallback(errorMessages.unknownError);
+      errorCallback(ErrorMessages.UNKNOWN_ERROR);
     });
 
     xhr.addEventListener('timeout', function () {
-      errorCallback(errorMessages.timeoutExpired);
+      errorCallback(ErrorMessages.TIMEOUT_EXPIRED);
     });
   }
 
