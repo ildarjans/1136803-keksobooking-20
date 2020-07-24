@@ -34,7 +34,7 @@
   guestNoticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     var formData = new FormData(guestNoticeForm);
-    window.ajax.upload(FORM_UPLOAD_URL, successCallback, errorCallback, formData);
+    window.ajax.upload(FORM_UPLOAD_URL, restorePageToDefault, showErrorPopup, formData);
   });
 
   guestNoticeForm.addEventListener('reset', function () {
@@ -83,41 +83,41 @@
     var pinCoordinates = getMainPinArrowCoordinates();
     guestNoticeForm.classList.remove('ad-form--disabled');
     filtersForm.classList.remove('ad-form--disabled');
-    accomodationType.addEventListener('change', changeAccomodationType);
-    accomodationPrice.addEventListener('change', changeAccomodationPrice);
-    checkinTime.addEventListener('change', syncronizeCheckinTime);
-    checkoutTime.addEventListener('change', syncronizeCheckoutTime);
-    roomsQuantity.addEventListener('change', changeRoomsQuantity);
-    roomsCapacity.addEventListener('change', changeRoomsCapacity);
+    accomodationType.addEventListener('change', accomodationTypeHandler);
+    accomodationPrice.addEventListener('change', accomodationPriceHandler);
+    checkinTime.addEventListener('change', checkinTimeHandler);
+    checkoutTime.addEventListener('change', checkoutTimeHandler);
+    roomsQuantity.addEventListener('change', roomsQuantityHandler);
+    roomsCapacity.addEventListener('change', roomsCapacityHandler);
     addressInput.value = pinCoordinates.x + ', ' + pinCoordinates.y;
     validateRooms();
     enableFormFields();
-    setMinPriceForAccomodationType();
+    setMinPriceAccomodationType();
   }
 
   function deactivateForm() {
     var pinCoordinates = getMainPinCenterCoordinates();
     guestNoticeForm.classList.add('ad-form--disabled');
     filtersForm.classList.add('ad-form--disabled');
-    accomodationType.removeEventListener('change', changeAccomodationType);
-    accomodationPrice.removeEventListener('change', changeAccomodationPrice);
-    checkinTime.removeEventListener('change', syncronizeCheckinTime);
-    checkoutTime.removeEventListener('change', syncronizeCheckoutTime);
-    roomsQuantity.removeEventListener('change', changeRoomsQuantity);
-    roomsCapacity.removeEventListener('change', changeRoomsCapacity);
+    accomodationType.removeEventListener('change', accomodationTypeHandler);
+    accomodationPrice.removeEventListener('change', accomodationPriceHandler);
+    checkinTime.removeEventListener('change', checkinTimeHandler);
+    checkoutTime.removeEventListener('change', checkoutTimeHandler);
+    roomsQuantity.removeEventListener('change', roomsQuantityHandler);
+    roomsCapacity.removeEventListener('change', roomsCapacityHandler);
     addressInput.value = pinCoordinates.x + ', ' + pinCoordinates.y;
     disableFormFields();
   }
 
-  function syncronizeCheckoutTime() {
+  function checkoutTimeHandler() {
     checkinTime.value = checkoutTime.value;
   }
 
-  function syncronizeCheckinTime() {
+  function checkinTimeHandler() {
     checkoutTime.value = checkinTime.value;
   }
 
-  function setMinPriceForAccomodationType() {
+  function setMinPriceAccomodationType() {
     accomodationPrice.min = minPrices[accomodationType.value];
     accomodationPrice.placeholder = minPrices[accomodationType.value];
   }
@@ -134,37 +134,33 @@
     }
   }
 
-  function changeAccomodationType() {
-    setMinPriceForAccomodationType();
+  function accomodationTypeHandler() {
+    setMinPriceAccomodationType();
     validateAccomodationTypeAndPrice();
   }
 
-  function changeAccomodationPrice() {
-    setMinPriceForAccomodationType();
+  function accomodationPriceHandler() {
+    setMinPriceAccomodationType();
     validateAccomodationTypeAndPrice();
   }
 
-  function changeRoomsQuantity() {
+  function roomsQuantityHandler() {
     validateRooms();
   }
 
-  function changeRoomsCapacity() {
+  function roomsCapacityHandler() {
     validateRooms();
   }
 
-  function successCallback() {
-    var pinClickHandler = window.main.pinClickHandler;
-    var pinKeyEnterHandler = window.main.pinKeyEnterHandler;
+  function restorePageToDefault() {
     showPopup(successPopup);
     window.addEventListener('click', successClickHandler);
     window.addEventListener('keydown', successEscapeHandler);
     window.main.disableKeksobooking();
-    window.hotelsPins.removeRenderedPins(pinClickHandler, pinKeyEnterHandler);
-    window.hotelsCards.removeCurrentCard();
     guestNoticeForm.reset();
   }
 
-  function errorCallback() {
+  function showErrorPopup() {
     showPopup(errorPopup);
     window.addEventListener('click', errorClickHandler);
     window.addEventListener('keydown', errorEscapeHandler);
