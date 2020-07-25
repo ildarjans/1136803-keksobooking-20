@@ -4,8 +4,13 @@
   var FORM_UPLOAD_URL = 'https://javascript.pages.academy/keksobooking';
   var ROOMS_MESSAGE = 'Для заданного количества комнат выбранно не допустимое количество гостей';
   var MIN_PRICE_MESSAGE = 'Для выбранного типа жилья цена не может быть ниже ';
+  var UPLOAD_IMAGES_MESSAGE = 'Достигнут предел загруженных изображений.\n' +
+  'Приносим извинения за доставленные неудобства';
   var INVALID_COLOR = '#a82929';
   var VALID_COLOR = '#000000';
+  var AVATAR_IMAGES_LIMIT = 3;
+  var OFFER_IMAGES_LIMIT = 5;
+
   var minPrices = {
     'bungalo': 0,
     'flat': 1000,
@@ -13,10 +18,9 @@
     'palace': 10000
   };
 
-  var getMainPinArrowCoordinates = window.keksobookingMap.getMainPinArrowCoordinates;
-  var getMainPinCenterCoordinates = window.keksobookingMap.getMainPinCenterCoordinates;
-  var filtersForm = window.keksobookingMap.mapSection.querySelector('.map__filters');
   var guestNoticeForm = document.querySelector('.notice form.ad-form');
+  var avatarPreview = guestNoticeForm.querySelector('.ad-form-header__preview');
+  var avatarInput = guestNoticeForm.querySelector('.ad-form-header__input');
   var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
   var addressInput = guestNoticeForm.querySelector('#address');
   var roomsQuantity = guestNoticeForm.querySelector('#room_number');
@@ -25,11 +29,21 @@
   var accomodationPrice = guestNoticeForm.querySelector('#price');
   var checkinTime = guestNoticeForm.querySelector('#timein');
   var checkoutTime = guestNoticeForm.querySelector('#timeout');
+  var offerPhotosContainer = guestNoticeForm.querySelector('.ad-form__photo-container');
+  var offerPhotoInput = offerPhotosContainer.querySelector('.ad-form__input');
+  var offerPhotoPreview = offerPhotosContainer.querySelector('.ad-form__photo');
 
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var filtersForm = window.keksobookingMap.mapFilters;
+  var getMainPinArrowCoordinates = window.keksobookingMap.getMainPinArrowCoordinates;
+  var getMainPinCenterCoordinates = window.keksobookingMap.getMainPinCenterCoordinates;
+  var popupMessage = window.popupMessage.show;
+  var avatarImagesAdded = 0;
+  var offerImagesAdded = 0;
   var successPopup;
   var errorPopup;
+
 
   guestNoticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
@@ -222,9 +236,55 @@
     window.removeEventListener('keydown', errorEscapeHandler);
   }
 
+  avatarInput.addEventListener('change', function (evt) {
+    if (AVATAR_IMAGES_LIMIT > avatarImagesAdded) {
+      imageUploader(evt.target, avatarImagesHandler);
+    } else {
+      popupMessage(UPLOAD_IMAGES_MESSAGE);
+    }
+  });
+
+  offerPhotoInput.addEventListener('change', function (evt) {
+    if (OFFER_IMAGES_LIMIT > offerImagesAdded) {
+      imageUploader(evt.target, offerPhotosHandler);
+    } else {
+      popupMessage(UPLOAD_IMAGES_MESSAGE);
+    }
+  });
+
+  function imageUploader(target, renderImageHandler) {
+    var fr = new FileReader();
+    var file = target.files[0];
+    fr.readAsDataURL(file);
+    fr.addEventListener('loadend', renderImageHandler, {once: true});
+  }
+
+  function avatarImagesHandler(evt) {
+    if (avatarImagesAdded > 0) {
+      var nextAvatarPreview = avatarPreview.cloneNode(true);
+      nextAvatarPreview.children[0].src = evt.target.result;
+      avatarPreview.insertAdjacentElement('afterend', nextAvatarPreview);
+    } else {
+      avatarPreview.children[0].src = evt.target.result;
+    }
+    avatarImagesAdded++;
+  }
+
+  function offerPhotosHandler(evt) {
+    var img = document.createElement('img');
+    img.src = evt.target.result;
+    if (offerImagesAdded > 0) {
+      var nextOfferPhoto = offerPhotoPreview.cloneNode();
+      nextOfferPhoto.append(img);
+      offerPhotosContainer.append(nextOfferPhoto);
+    } else {
+      offerPhotoPreview.append(img);
+    }
+    offerImagesAdded++;
+  }
+
   renderSuccessPopup(successTemplate);
   renderErrorPopup(errorTemplate);
-
 
   window.bookingForm = {
     activateForm: activateForm,

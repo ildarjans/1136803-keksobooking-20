@@ -16,19 +16,19 @@
   };
 
   var hotelsFeaturesFilter = {
-    'features': filterByFeatures
+    features: filterByFeatures
   };
 
   var priceRangeDescription = {
-    'low': {
+    low: {
       min: 0,
       max: 10000,
     },
-    'middle': {
+    middle: {
       min: 10000,
       max: 50000,
     },
-    'high': {
+    high: {
       min: 50000,
       max: 1000000000,
     },

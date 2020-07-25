@@ -5,20 +5,18 @@
   var containerStyles = [
     'align-items: center',
     'background-color: rgba(0, 0, 0, 0.75)',
-    'border-radius: 5px',
     'color: #fff',
     'display: none',
     'font-size: 32px',
     'font-weight: 700',
-    'height: 50%',
+    'height: 100%',
     'justify-content: center',
-    'left: 50%',
+    'left: 0%',
     'padding: 20px',
-    'position: absolute',
-    'top: 50%',
-    'transform: translate(-50%, -50%)',
+    'position: fixed',
+    'top: 0%',
     'transition: all 0.3s',
-    'width: 75%',
+    'width: 100%',
     'z-index: 100'
   ];
   var closeButtonStyles = [

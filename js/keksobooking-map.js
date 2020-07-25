@@ -147,5 +147,4 @@
     pinsContainer: pinsContainer,
   };
 
-
 })();
