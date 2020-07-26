@@ -23,11 +23,11 @@
   function disableKeksobooking() {
     mainPin.addEventListener('mousedown', mainPinMousedownHandler);
     mainPin.addEventListener('keydown', mainPinKeydownHandler);
+    deactivateFilters();
+    deactivateForm();
     deactivateMap();
     removeRenderedPins();
     removeCurrentCard();
-    deactivateFilters();
-    deactivateForm();
   }
 
   function enableKeksobooking() {
