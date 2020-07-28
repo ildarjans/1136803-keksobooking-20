@@ -85,9 +85,9 @@
       hideElement(cardFeatures);
       return;
     }
-    var templateElement = cardFeatures.querySelectorAll('.popup__feature');
+    var templateElements = cardFeatures.querySelectorAll('.popup__feature');
     var regex = new RegExp(offerFeatures.join('|'), 'gi');
-    templateElement.forEach(function (feature) {
+    templateElements.forEach(function (feature) {
       return !feature.classList.value.match(regex) ? feature.remove() : '';
     });
   }

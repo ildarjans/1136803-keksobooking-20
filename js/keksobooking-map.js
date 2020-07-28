@@ -25,7 +25,7 @@
   var mapFilters = mapSection.querySelector('.map__filters');
 
   mainPin.style.zIndex = 2;
-  window.addEventListener('resize', mainPinMoveAreaHandle);
+  window.addEventListener('resize', windowResizeHandler);
 
   mainPin.addEventListener('mousedown', function () {
     mainPin.addEventListener('mousemove', mainPinMousemoveHandler);
@@ -54,27 +54,21 @@
 
   function activateMap() {
     mapSection.classList.remove('map--faded');
+    mapFilters.classList.remove('ad-form--disabled');
     pinsContainer.addEventListener('focus', pinsFocusHandler, true);
     pinsContainer.addEventListener('blur', pinsBlurHandler, true);
   }
 
   function deactivateMap() {
     mapSection.classList.add('map--faded');
-    setMainPinDefaultPosition();
+    mapFilters.classList.add('ad-form--disabled');
     pinsContainer.removeEventListener('focus', pinsFocusHandler, true);
     pinsContainer.removeEventListener('blur', pinsBlurHandler, true);
-  }
-
-  function activateFilters() {
-    mapFilters.classList.remove('ad-form--disabled');
-  }
-
-  function deactivateFilters() {
-    mapFilters.classList.add('ad-form--disabled');
+    setMainPinDefaultPosition();
     mapFilters.reset();
   }
 
-  function mainPinMoveAreaHandle() {
+  function windowResizeHandler() {
     MainPinMoveArea.X_MAX = mapSection.offsetWidth - MainPinOffset.X;
   }
 
@@ -135,10 +129,8 @@
   }
 
   window.keksobookingMap = {
-    activateMap: activateMap,
-    activateFilters: activateFilters,
-    deactivateMap: deactivateMap,
-    deactivateFilters: deactivateFilters,
+    activate: activateMap,
+    deactivate: deactivateMap,
     getMainPinCenterCoordinates: getMainPinCenterCoordinates,
     getMainPinArrowCoordinates: getMainPinArrowCoordinates,
     mapFilters: mapFilters,

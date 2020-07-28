@@ -23,6 +23,7 @@
   var avatarPreview = guestNoticeForm.querySelector('.ad-form-header__preview');
   var avatarInput = guestNoticeForm.querySelector('.ad-form-header__input');
   var formFields = guestNoticeForm.querySelectorAll('fieldset[class^=ad-form');
+  var formReset = guestNoticeForm.querySelector('.ad-form__reset');
   var addressInput = guestNoticeForm.querySelector('#address');
   var roomsQuantity = guestNoticeForm.querySelector('#room_number');
   var roomsCapacity = guestNoticeForm.querySelector('#capacity');
@@ -42,12 +43,13 @@
   var popupMessage = window.popupMessage.show;
   var userAddedAvatarImages = [];
   var userAddedOfferPhotos = [];
-  var avatarImagesAdded = 0;
-  var offerImagesAdded = 0;
+  var avatarImagesCounter = 0;
+  var offerImagescounter = 0;
   var successPopup;
   var errorPopup;
 
-  function formResetHandler() {
+  function formResetClickHandler() {
+    guestNoticeForm.reset();
     window.main.disableKeksobooking();
   }
 
@@ -70,15 +72,15 @@
   }
 
   function validateRooms() {
-    var selectedRoom = roomsQuantity.selectedOptions[0].value;
+    var selectedRooms = roomsQuantity.selectedOptions[0].value;
     var roomsCapacityOptions = Array.from(roomsCapacity.options);
     var selectedAndDisabled = false;
 
     roomsCapacityOptions.forEach(function (option) {
-      if (selectedRoom === '100') {
+      if (selectedRooms === '100') {
         option.disabled = option.value !== '0';
       } else {
-        option.disabled = !(option.value <= selectedRoom && option.value !== '0');
+        option.disabled = !(option.value <= selectedRooms && option.value !== '0');
       }
 
       option.style.color = option.disabled ? 'unset' : VALID_COLOR;
@@ -108,13 +110,14 @@
 
   function deactivateForm() {
     var pinCoordinates = getMainPinCenterCoordinates();
+    addressInput.value = pinCoordinates.x + ', ' + pinCoordinates.y;
     guestNoticeForm.classList.add('ad-form--disabled');
     filtersForm.classList.add('ad-form--disabled');
-    addressInput.value = pinCoordinates.x + ', ' + pinCoordinates.y;
+    disableFormFields();
     removeFormEventListeners();
     restoreToDefaultAvatarImages();
     restoreToDefaultOfferPhotos();
-    disableFormFields();
+    setMinPriceAccomodationType();
   }
 
   function addFormEventListeners() {
@@ -124,7 +127,7 @@
     checkinTime.addEventListener('change', checkinTimeChangeHandler);
     checkoutTime.addEventListener('change', checkoutTimeChangeHandler);
     guestNoticeForm.addEventListener('submit', formSubmitHandler);
-    guestNoticeForm.addEventListener('reset', formResetHandler);
+    formReset.addEventListener('click', formResetClickHandler);
     roomsQuantity.addEventListener('change', roomsQuantityChangeHandler);
     roomsCapacity.addEventListener('change', roomsCapacityChangeHandler);
     offerPhotoInput.addEventListener('change', offerPhotoChangeHandler);
@@ -137,7 +140,7 @@
     checkinTime.removeEventListener('change', checkinTimeChangeHandler);
     checkoutTime.removeEventListener('change', checkoutTimeChangeHandler);
     guestNoticeForm.removeEventListener('submit', formSubmitHandler);
-    guestNoticeForm.removeEventListener('reset', formResetHandler);
+    formReset.removeEventListener('click', formResetClickHandler);
     roomsQuantity.removeEventListener('change', roomsQuantityChangeHandler);
     roomsCapacity.removeEventListener('change', roomsCapacityChangeHandler);
     offerPhotoInput.removeEventListener('change', offerPhotoChangeHandler);
@@ -190,8 +193,8 @@
     showPopup(successPopup);
     window.addEventListener('click', windowSuccessClickHandler);
     window.addEventListener('keydown', windowSuccessEscapeHandler);
-    window.main.disableKeksobooking();
     guestNoticeForm.reset();
+    window.main.disableKeksobooking();
   }
 
   function showErrorPopup() {
@@ -257,7 +260,7 @@
   }
 
   function avatarChangeHandler(evt) {
-    if (AVATAR_IMAGES_LIMIT > avatarImagesAdded) {
+    if (AVATAR_IMAGES_LIMIT > avatarImagesCounter) {
       imageUploader(evt.target, loadendAvatarImageHandler);
     } else {
       popupMessage(UPLOAD_IMAGES_MESSAGE);
@@ -265,7 +268,7 @@
   }
 
   function offerPhotoChangeHandler(evt) {
-    if (OFFER_IMAGES_LIMIT > offerImagesAdded) {
+    if (OFFER_IMAGES_LIMIT > offerImagescounter) {
       imageUploader(evt.target, loadendOfferPhotoHandler);
     } else {
       popupMessage(UPLOAD_IMAGES_MESSAGE);
@@ -282,7 +285,7 @@
   }
 
   function loadendAvatarImageHandler(evt) {
-    if (avatarImagesAdded > 0) {
+    if (avatarImagesCounter > 0) {
       var nextAvatarPreview = avatarPreview.cloneNode(true);
       nextAvatarPreview.children[0].src = evt.target.result;
       avatarPreview.insertAdjacentElement('afterend', nextAvatarPreview);
@@ -291,13 +294,13 @@
       avatarPreview.children[0].src = evt.target.result;
       userAddedAvatarImages.push(avatarPreview);
     }
-    avatarImagesAdded++;
+    avatarImagesCounter++;
   }
 
   function loadendOfferPhotoHandler(evt) {
     var img = document.createElement('img');
     img.src = evt.target.result;
-    if (offerImagesAdded > 0) {
+    if (offerImagescounter > 0) {
       var nextOfferPhoto = offerPhotoPreview.cloneNode();
       nextOfferPhoto.append(img);
       offerPhotosContainer.append(nextOfferPhoto);
@@ -306,11 +309,11 @@
       offerPhotoPreview.append(img);
       userAddedOfferPhotos.push(offerPhotoPreview);
     }
-    offerImagesAdded++;
+    offerImagescounter++;
   }
 
   function restoreToDefaultAvatarImages() {
-    avatarImagesAdded = 0;
+    avatarImagesCounter = 0;
     userAddedAvatarImages.forEach(function (avatar) {
       if (avatar !== avatarPreview) {
         avatar.remove();
@@ -318,10 +321,11 @@
         avatarPreview.children[0].src = DEFAULT_AVATAR;
       }
     });
+    userAddedAvatarImages = [];
   }
 
   function restoreToDefaultOfferPhotos() {
-    offerImagesAdded = 0;
+    offerImagescounter = 0;
     userAddedOfferPhotos.forEach(function (photo) {
       if (photo !== offerPhotoPreview) {
         photo.remove();
@@ -329,14 +333,15 @@
         offerPhotoPreview.children[0].remove();
       }
     });
+    userAddedOfferPhotos = [];
   }
 
   renderSuccessPopup(successTemplate);
   renderErrorPopup(errorTemplate);
 
   window.bookingForm = {
-    activateForm: activateForm,
-    deactivateForm: deactivateForm,
+    activate: activateForm,
+    deactivate: deactivateForm,
     addressInput: addressInput
   };
 

@@ -9,10 +9,10 @@
   var mapFilters = window.keksobookingMap.mapFilters;
 
   var hotelsInputFilters = {
-    'housing-type': matchedHotelByType,
-    'housing-price': matchedHotelByPrice,
-    'housing-guests': matchedHotelByGuests,
-    'housing-rooms': matchedHotelByRooms,
+    'housing-type': isMatchesHotelByType,
+    'housing-price': isMatchesHotelByPrice,
+    'housing-guests': isMatchedHotelByGuests,
+    'housing-rooms': isMatchesHotelByRooms,
   };
 
   var hotelsFeaturesFilter = {
@@ -103,21 +103,21 @@
     return resultIds;
   }
 
-  function matchedHotelByType(hotel, value) {
+  function isMatchesHotelByType(hotel, value) {
     return hotel.offer.type === value;
   }
 
-  function matchedHotelByPrice(hotel, value) {
+  function isMatchesHotelByPrice(hotel, value) {
     var min = priceRangeDescription[value].min;
     var max = priceRangeDescription[value].max;
     return hotel.offer.price >= min && hotel.offer.price < max;
   }
 
-  function matchedHotelByRooms(hotel, value) {
+  function isMatchesHotelByRooms(hotel, value) {
     return hotel.offer.rooms === +value;
   }
 
-  function matchedHotelByGuests(hotel, value) {
+  function isMatchedHotelByGuests(hotel, value) {
     return hotel.offer.guests === +value;
   }
 
@@ -133,7 +133,7 @@
   }
 
   window.filterForm = {
-    enableFilterForm: enableFilterForm
+    enable: enableFilterForm
   };
 
 })();

@@ -4,13 +4,11 @@
   var HOTELS_LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
   var MAX_PINS_DISPLAY = 5;
 
-  var activateMap = window.keksobookingMap.activateMap;
-  var activateFilters = window.keksobookingMap.activateFilters;
-  var activateForm = window.bookingForm.activateForm;
-  var enableFilterForm = window.filterForm.enableFilterForm;
-  var deactivateFilters = window.keksobookingMap.deactivateFilters;
-  var deactivateForm = window.bookingForm.deactivateForm;
-  var deactivateMap = window.keksobookingMap.deactivateMap;
+  var activateMap = window.keksobookingMap.activate;
+  var activateForm = window.bookingForm.activate;
+  var enableFilterForm = window.filterForm.enable;
+  var deactivateForm = window.bookingForm.deactivate;
+  var deactivateMap = window.keksobookingMap.deactivate;
   var convertHotelsResponse = window.hotelsCards.convertHotelsResponse;
   var mainPin = window.keksobookingMap.mainPin;
   var renderHotelsPins = window.hotelsPins.renderPins;
@@ -23,9 +21,8 @@
   function disableKeksobooking() {
     mainPin.addEventListener('mousedown', mainPinMousedownHandler);
     mainPin.addEventListener('keydown', mainPinKeydownHandler);
-    deactivateFilters();
-    deactivateForm();
     deactivateMap();
+    deactivateForm();
     removeRenderedPins();
     removeCurrentCard();
   }
@@ -35,7 +32,6 @@
     mainPin.removeEventListener('keydown', mainPinKeydownHandler);
     window.ajax.load(HOTELS_LOAD_URL, applySuccessResponse, showErrorPopup);
     activateMap();
-    activateFilters();
     activateForm();
   }
 
@@ -51,8 +47,8 @@
     }
   }
 
-  function applySuccessResponse(response) {
-    hotels = convertHotelsResponse(response);
+  function applySuccessResponse(responseAsHotelsArray) {
+    hotels = convertHotelsResponse(responseAsHotelsArray);
     var ids = Object.keys(hotels).slice(0, MAX_PINS_DISPLAY);
     renderHotelsPins(ids, hotels);
     enableFilterForm(hotels, MAX_PINS_DISPLAY);
