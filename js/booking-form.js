@@ -44,7 +44,7 @@
   var userAddedAvatarImages = [];
   var userAddedOfferPhotos = [];
   var avatarImagesCounter = 0;
-  var offerImagescounter = 0;
+  var offerImagesCounter = 0;
   var successPopup;
   var errorPopup;
 
@@ -268,7 +268,7 @@
   }
 
   function offerPhotoChangeHandler(evt) {
-    if (OFFER_IMAGES_LIMIT > offerImagescounter) {
+    if (OFFER_IMAGES_LIMIT > offerImagesCounter) {
       imageUploader(evt.target, loadendOfferPhotoHandler);
     } else {
       popupMessage(UPLOAD_IMAGES_MESSAGE);
@@ -300,7 +300,7 @@
   function loadendOfferPhotoHandler(evt) {
     var img = document.createElement('img');
     img.src = evt.target.result;
-    if (offerImagescounter > 0) {
+    if (offerImagesCounter > 0) {
       var nextOfferPhoto = offerPhotoPreview.cloneNode();
       nextOfferPhoto.append(img);
       offerPhotosContainer.append(nextOfferPhoto);
@@ -309,7 +309,7 @@
       offerPhotoPreview.append(img);
       userAddedOfferPhotos.push(offerPhotoPreview);
     }
-    offerImagescounter++;
+    offerImagesCounter++;
   }
 
   function restoreToDefaultAvatarImages() {
@@ -325,7 +325,7 @@
   }
 
   function restoreToDefaultOfferPhotos() {
-    offerImagescounter = 0;
+    offerImagesCounter = 0;
     userAddedOfferPhotos.forEach(function (photo) {
       if (photo !== offerPhotoPreview) {
         photo.remove();
