@@ -57,11 +57,11 @@
 
   function getSelectedFilters(form) {
     var formData = new FormData(form);
-    var result = [];
+    var selectedFilters = [];
     Object.keys(hotelsInputFilters).forEach(function (name) {
       var selectedValue = formData.get(name);
       if (selectedValue !== 'any') {
-        result.push({
+        selectedFilters.push({
           filterName: hotelsInputFilters[name],
           value: selectedValue
         });
@@ -70,13 +70,13 @@
     Object.keys(hotelsFeaturesFilter).forEach(function (name) {
       var selectedFeatures = formData.getAll(name);
       if (selectedFeatures.length > 0) {
-        result.push({
+        selectedFilters.push({
           filterName: hotelsFeaturesFilter[name],
           value: selectedFeatures
         });
       }
     });
-    return result;
+    return selectedFilters;
   }
 
   function filterHotelsIds(selectedFilters, maxPins) {
